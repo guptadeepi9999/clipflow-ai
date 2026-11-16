@@ -1,11 +1,11 @@
-FROM python:3.10-slim
+FROM node:18-slim
 
-# Install system dependencies (FFmpeg, curl, and build tools)
+# Install FFmpeg, Python3 (yt-dlp ke liye), aur curl
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
+    python3 \
     curl \
     ca-certificates \
-    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 # Install yt-dlp latest release
@@ -13,8 +13,13 @@ RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o 
     && chmod a+rx /usr/local/bin/yt-dlp
 
 WORKDIR /app
-COPY . /app
 
-RUN pip install --no-cache-dir -r requirements.txt
+# Install Node.js dependencies
+COPY package*.json ./
+RUN npm install
 
-CMD ["sh", "-c", "gunicorn app:app --bind 0.0.0.0:$PORT"]
+# Copy project files
+COPY . .
+
+# Start Node.js server
+CMD ["node", "server.js"]
