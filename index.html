@@ -1,7 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="monetag" content="80c71d8c81c7f23b40356209a5b8ac48">
-  <title>ClipFlow AI - 100% Free AI Video Clipper</title>
+<script src="/app.js"></script>
+  
+  <!-- Monetag Service Worker Registration Script -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('Monetag ServiceWorker registered successfully with scope: ', registration.scope);
+          })
+          .catch(error => {
+            console.log('Monetag ServiceWorker registration failed: ', error);
+          });
+      });
+    }
+  </script>
+</body>
+</html>
