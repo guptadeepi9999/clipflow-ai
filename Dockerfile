@@ -1,22 +1,20 @@
-FROM node:20-alpine
+FROM python:3.10-slim
 
-# Install FFmpeg and yt-dlp directly via Alpine package manager
-RUN apk add --no-cache ffmpeg yt-dlp
+# Install system dependencies (FFmpeg, curl, and build tools)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg \
+    curl \
+    ca-certificates \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install yt-dlp latest release
+RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp \
+    && chmod a+rx /usr/local/bin/yt-dlp
 
 WORKDIR /app
+COPY . /app
 
-# Install app dependencies
-COPY package*.json ./
-RUN npm install --production
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Bundle app source
-COPY . .
-
-# Ensure working directories
-RUN mkdir -p uploads output temp public
-
-EXPOSE 3000
-ENV PORT=3000
-ENV NODE_ENV=production
-
-CMD ["node", "server.js"]
+CMD ["sh", "-c", "gunicorn app:app --bind 0.0.0.0:$PORT"]
