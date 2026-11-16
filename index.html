@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClipFlow AI - 100% Free AI Video Clipper (Opus Clip & Klap Alternative)</title>
+  
+  <!-- Google tag (gtag.js) / Firebase Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-93MPB0TF03"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-93MPB0TF03');
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Impact&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <div class="logo-icon">⚡</div>
+        <span class="logo-text">ClipFlow<span class="gradient-text">.AI</span></span>
+        <span class="badge-free">100% FREE • NO WATERMARK</span>
+      </div>
+
+      <nav class="nav-links">
+        <a href="#how-it-works">How It Works</a>
+        <a href="#features">Features</a>
+        <button id="openSettingsBtn" class="btn-ghost">
+          ⚙️ Settings & Ads
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Top Leaderboard Ad Slot (Google AdSense 728x90 / Responsive) -->
+  <div class="ad-container top-ad-banner" id="topAdBanner">
+    <div class="ad-label">SPONSORED ADVERTISEMENT</div>
+    <div class="ad-box leaderboard-box">
+      <!-- Google AdSense Code Injected Here -->
+      <div class="demo-ad-content">
+        <span class="demo-ad-tag">Ad</span>
+        <span class="demo-ad-title">🚀 Scale Your Social Media Channels 10x Faster</span>
+        <span class="demo-ad-sub">Trusted by over 100,000+ creators worldwide. Try free demo today!</span>
+        <button class="demo-ad-btn">Learn More</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="main-content">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        #1 Free Opus Clip & Klap Alternative
+      </div>
+      <h1 class="hero-title">
+        Turn 1 Long Video Into <span class="gradient-text">10 Viral Shorts</span> In 1 Click
+      </h1>
+      <p class="hero-subtitle">
+        AI finds the most engaging hooks, reframes to 9:16 vertical, and adds Alex Hormozi style animated captions. 
+        <strong>100% Free. No Watermarks. No Hidden Subscriptions.</strong>
+      </p>
+
+      <!-- Input Card -->
+      <div class="input-card">
+        <!-- Input Tabs -->
+        <div class="input-tabs">
+          <button class="tab-btn active" data-tab="youtube">
+            <span class="tab-icon">▶</span> YouTube Link
+          </button>
+          <button class="tab-btn" data-tab="upload">
+            <span class="tab-icon">📁</span> Upload Video File
+          </button>
+        </div>
+
+        <!-- YouTube Tab -->
+        <div class="tab-content active" id="youtubeTab">
+          <div class="input-group">
+            <input 
+              type="text" 
+              id="youtubeUrlInput" 
+              placeholder="Paste YouTube video or podcast URL (e.g. https://www.youtube.com/watch?v=...)"
+            >
+            <button id="fetchYtBtn" class="btn-secondary">Check</button>
+          </div>
+
+          <!-- YouTube Video Live Preview Card -->
+          <div id="ytPreviewCard" class="yt-preview-card hidden">
+            <img id="ytThumb" src="" alt="Thumbnail" class="yt-thumb">
+            <div class="yt-meta">
+              <h4 id="ytTitle">Video Title</h4>
+              <p id="ytDuration">Duration: --:--</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upload Tab -->
+        <div class="tab-content" id="uploadTab">
+          <div class="drop-zone" id="dropZone">
+            <input type="file" id="videoFileInput" accept="video/mp4,video/quicktime,video/webm" class="file-input">
+            <div class="drop-content">
+              <div class="drop-icon">📤</div>
+              <p class="drop-title">Drag & drop your MP4, MOV, or WebM video here</p>
+              <p class="drop-subtitle">or click to browse from your computer (Up to 500MB)</p>
+            </div>
+            <div id="selectedFileInfo" class="selected-file-info hidden">
+              <span class="file-name" id="selectedFileName">video.mp4</span>
+              <button type="button" id="removeFileBtn" class="btn-remove">✕</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Clip Settings -->
+        <div class="settings-grid">
+          <div class="setting-item">
+            <label>⏱️ Target Clip Length</label>
+            <select id="clipLengthSelect">
+              <option value="15-30">15 - 30 seconds (Quick Viral Hooks)</option>
+              <option value="30-60" selected>30 - 60 seconds (Reels & Shorts Standard)</option>
+              <option value="60-90">60 - 90 seconds (In-depth Highlight)</option>
+            </select>
+          </div>
+
+          <div class="setting-item">
+            <label>📐 Aspect Ratio</label>
+            <select id="aspectRatioSelect">
+              <option value="9:16" selected>9:16 Vertical (Shorts, Reels, TikTok)</option>
+              <option value="1:1">1:1 Square (Instagram Post / LinkedIn)</option>
+              <option value="16:9">16:9 Landscape (YouTube)</option>
+            </select>
+          </div>
+
+          <div class="setting-item">
+            <label>🎨 Subtitle Style Preset</label>
+            <select id="subtitleStyleSelect">
+              <option value="hormozi" selected>Hormozi Gold (Yellow/White + Black Outline)</option>
+              <option value="beast">MrBeast Pop (Green/Yellow Bold Impact)</option>
+              <option value="neon">Neon Cyberpunk (Cyan & Magenta Glow)</option>
+              <option value="minimal">Clean Minimal (Modern White Sans)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Generate Button -->
+        <button id="generateBtn" class="btn-primary glow-btn">
+          <span class="btn-icon">⚡</span> Generate Viral Clips (Free)
+        </button>
+      </div>
+    </section>
+
+    <!-- Processing Stage (Animated Steps) -->
+    <section id="processingSection" class="processing-section hidden">
+      <div class="processing-card">
+        <h3 class="processing-title">AI Virality Engine At Work</h3>
+        <p class="processing-desc" id="processStatusText">Analyzing speech, extracting best viral hooks, and generating 9:16 vertical cuts...</p>
+
+        <div class="render-progress-bar" style="margin: 16px 0 24px 0;">
+          <div class="render-progress-fill" id="liveProcessFill" style="width: 10%;"></div>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="stepper">
+          <div class="step active" id="step1">
+            <div class="step-circle">1</div>
+            <div class="step-label">Ingesting Video</div>
+          </div>
+          <div class="step-line"></div>
+          <div class="step" id="step2">
+            <div class="step-circle">2</div>
+            <div class="step-label">Audio & Speech</div>
+          </div>
+          <div class="step-line"></div>
+          <div class="step" id="step3">
+            <div class="step-circle">3</div>
+            <div class="step-label">AI Virality Scoring</div>
+          </div>
+          <div class="step-line"></div>
+          <div class="step" id="step4">
+            <div class="step-circle">4</div>
+            <div class="step-label">Generating Cuts</div>
+          </div>
+        </div>
+
+        <!-- High-CTR In-Stream Sponsor Ad Box -->
+        <div class="ad-container instream-ad-box">
+          <div class="ad-label">SPONSORED BY OUR SUPPORTERS</div>
+          <div class="ad-box middle-ad-box">
+            <div class="demo-ad-content horizontal">
+              <div class="demo-ad-badge">AD</div>
+              <div>
+                <h4>🎯 High-Speed Cloud Video Hosting & CDN</h4>
+                <p>Deliver 4K video instantly across 280+ global edges with zero buffering.</p>
+              </div>
+              <button class="demo-ad-btn">Start Free</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results Studio (Opus Clip / Klap Style Dashboard) -->
+    <section id="resultsSection" class="results-section hidden">
+      <div class="results-header">
+        <div>
+          <h2 class="section-title">Your Generated Viral Clips</h2>
+          <p class="section-subtitle" id="projectMetaSubtitle">Selected the highest retention moments from your video.</p>
+        </div>
+        <button id="newProjectBtn" class="btn-secondary">＋ Create More Clips</button>
+      </div>
+
+      <div class="studio-layout">
+        <!-- Left: Live Vertical Video Preview Player -->
+        <div class="player-panel">
+          <div class="preview-aspect-container" id="playerAspectContainer">
+            <video id="mainVideoPlayer" controls playsinline></video>
+            <!-- Dynamic Overlay Subtitles Preview -->
+            <div id="subtitlesOverlay" class="subtitles-overlay style-hormozi">
+              <span id="subtitlesText">AI CAPTIONS PREVIEW</span>
+            </div>
+          </div>
+
+          <div class="player-info-card">
+            <div class="player-clip-header">
+              <span id="activeClipScore" class="score-pill">Score: 98/100</span>
+              <h3 id="activeClipHeadline">Clip Headline</h3>
+            </div>
+            <p id="activeClipReason" class="clip-reason-text">Hook analysis reasoning...</p>
+
+            <!-- Fine-Tune Trim Controls -->
+            <div class="trim-controls">
+              <div class="trim-group">
+                <label>Start: <span id="trimStartVal">0.0s</span></label>
+                <input type="range" id="trimStartRange" min="0" max="100" step="0.5" value="0">
+              </div>
+              <div class="trim-group">
+                <label>End: <span id="trimEndVal">30.0s</span></label>
+                <input type="range" id="trimEndRange" min="0" max="100" step="0.5" value="30">
+              </div>
+            </div>
+
+            <!-- Download Button -->
+            <button id="renderAndDownloadBtn" class="btn-primary btn-download">
+              ⬇️ Download HD Clip (100% Free - No Watermark)
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Generated Clips List -->
+        <div class="clips-sidebar">
+          <h3 class="sidebar-heading">Generated Moments (<span id="clipsCount">0</span>)</h3>
+          <div class="clips-list" id="clipsListContainer">
+            <!-- Dynamically populated clip cards -->
+          </div>
+
+          <!-- Sidebar Rectangle Ad Unit (300x250) -->
+          <div class="ad-container sidebar-ad">
+            <div class="ad-label">SPONSORED ADVERTISEMENT</div>
+            <div class="ad-box rect-box">
+              <span class="demo-ad-tag">Ad</span>
+              <h4>⚡ Grow on YouTube & TikTok</h4>
+              <p>Automate your content pipeline with next-generation creator tools.</p>
+              <button class="demo-ad-btn">Explore</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Download Modal / Rendering Progress with Ad -->
+    <div id="downloadModal" class="modal-overlay hidden">
+      <div class="modal-content download-modal">
+        <h3 id="downloadModalTitle">Rendering Your 1080p Clip...</h3>
+        <p class="modal-desc">Cropping to 9:16 vertical and burning animated subtitles with FFmpeg...</p>
+        
+        <div class="render-progress-bar">
+          <div class="render-progress-fill" id="renderProgressFill"></div>
+        </div>
+
+        <!-- High-engagement Sponsor Ad in Download Modal -->
+        <div class="ad-container modal-ad-box">
+          <div class="ad-label">THANK YOU FOR SUPPORTING FREE TOOLS</div>
+          <div class="ad-box">
+            <span class="demo-ad-tag">Ad</span>
+            <h4>💻 Need a Custom AI Application for Your Business?</h4>
+            <p>We build production-ready AI agents, workflows, and SaaS platforms.</p>
+            <button class="demo-ad-btn">Contact Us</button>
+          </div>
+        </div>
+
+        <div id="downloadReadyActions" class="modal-actions hidden">
+          <a id="directDownloadLink" href="#" class="btn-primary glow-btn" download>
+            ⬇️ Save MP4 Video to Device
+          </a>
+          <button id="closeModalBtn" class="btn-secondary">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings & Ads Modal -->
+    <div id="settingsModal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>⚙️ Settings & Ad Configuration</h3>
+          <button id="closeSettingsModalBtn" class="btn-close">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Google Gemini API Key (Optional)</label>
+            <input type="password" id="geminiKeyInput" placeholder="AIzaSy...">
+            <small>If provided, Gemini 1.5/2.0 Flash is used for transcript and hook detection. If blank, built-in smart heuristic virality detection is used.</small>
+          </div>
+
+          <div class="form-group">
+            <label>Google AdSense Publisher ID</label>
+            <input type="text" id="adsenseIdInput" placeholder="pub-xxxxxxxxxxxxxxxx">
+            <small>Enter your AdSense publisher ID to monetize your site automatically.</small>
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label>
+              <input type="checkbox" id="enableAdsCheckbox" checked>
+              Show Ad Slots (Keep enabled to generate ad revenue)
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="saveSettingsBtn" class="btn-primary">Save Settings</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <p>© 2026 ClipFlow AI. The 100% Free Video Clipper with Zero Watermarks.</p>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Ad Choices</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
