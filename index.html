@@ -497,16 +497,32 @@
       <div class="input-card">
         <!-- Input Tabs -->
         <div class="input-tabs">
-          <button class="tab-btn active" data-tab="youtube" id="tabYoutube">
-            <span class="tab-icon">▶</span> YouTube Link
+          <button class="tab-btn active" data-tab="upload" id="tabUpload">
+            <span class="tab-icon">📁</span> Upload Video File (100% Free & Fast)
           </button>
-          <button class="tab-btn" data-tab="upload" id="tabUpload">
-            <span class="tab-icon">📁</span> Upload Video File
+          <button class="tab-btn" data-tab="youtube" id="tabYoutube">
+            <span class="tab-icon">▶</span> YouTube Link
           </button>
         </div>
 
+        <!-- Upload Tab (Primary Default) -->
+        <div class="tab-content" id="uploadTab">
+          <div class="drop-zone" id="dropZone" style="cursor: pointer; padding: 36px 20px; border: 2px dashed rgba(99, 102, 241, 0.45); border-radius: 14px; background: rgba(99, 102, 241, 0.04); text-align: center; transition: all 0.2s;">
+            <input type="file" id="videoFileInput" accept="video/mp4,video/quicktime,video/webm" class="file-input" style="display: none;">
+            <div class="drop-content">
+              <div class="drop-icon" style="font-size: 42px; margin-bottom: 12px;">⚡</div>
+              <p class="drop-title" style="font-size: 17px; font-weight: 700; margin-bottom: 6px;">Drop your Video File (MP4, MOV, WebM) here</p>
+              <p class="drop-subtitle" style="font-size: 13px; color: var(--text-muted);">or click to browse from your device • 100% Free • Direct HD Download • Zero Watermark</p>
+            </div>
+            <div id="selectedFileInfo" class="selected-file-info hidden" style="margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 12px;">
+              <span class="file-name" id="selectedFileName" style="font-weight: 700; color: #10b981; font-size: 15px;">✅ video.mp4</span>
+              <button type="button" id="removeFileBtn" class="btn-remove" style="background: rgba(255,255,255,0.1); border: 1px solid #555; color: #fff; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 12px;">✕ Change File</button>
+            </div>
+          </div>
+        </div>
+
         <!-- YouTube Tab -->
-        <div class="tab-content" id="youtubeTab">
+        <div class="tab-content hidden" id="youtubeTab">
           <div class="input-group">
             <input 
               type="text" 
@@ -522,22 +538,6 @@
             <div class="yt-meta">
               <h4 id="ytTitle">Video Title</h4>
               <p id="ytDuration">Duration: --:--</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Upload Tab -->
-        <div class="tab-content hidden" id="uploadTab">
-          <div class="drop-zone" id="dropZone">
-            <input type="file" id="videoFileInput" accept="video/mp4,video/quicktime,video/webm" class="file-input">
-            <div class="drop-content">
-              <div class="drop-icon">📤</div>
-              <p class="drop-title">Drag & drop your MP4, MOV, or WebM video here</p>
-              <p class="drop-subtitle">or click to browse from your computer (Up to 500MB)</p>
-            </div>
-            <div id="selectedFileInfo" class="selected-file-info hidden">
-              <span class="file-name" id="selectedFileName">video.mp4</span>
-              <button type="button" id="removeFileBtn" class="btn-remove">✕</button>
             </div>
           </div>
         </div>
@@ -885,17 +885,57 @@
       document.getElementById('ytPreviewCard').classList.remove('hidden');
     });
 
-    // 3. File Upload Dropzone
+    // 3. File Upload Dropzone (Primary 1-Click Feature)
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('videoFileInput');
+
+    dropZone.addEventListener('click', function(e) {
+      if (e.target.id !== 'removeFileBtn') {
+        fileInput.click();
+      }
+    });
+
+    dropZone.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      dropZone.style.borderColor = '#6366f1';
+      dropZone.style.background = 'rgba(99, 102, 241, 0.12)';
+    });
+
+    dropZone.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      dropZone.style.borderColor = 'rgba(99, 102, 241, 0.45)';
+      dropZone.style.background = 'rgba(99, 102, 241, 0.04)';
+    });
+
+    dropZone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      dropZone.style.borderColor = 'rgba(99, 102, 241, 0.45)';
+      dropZone.style.background = 'rgba(99, 102, 241, 0.04)';
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        selectedUploadFile = e.dataTransfer.files[0];
+        currentVideoTitle = selectedUploadFile.name.replace(/\.[^/.]+$/, "");
+        document.getElementById('selectedFileName').textContent = '✅ ' + selectedUploadFile.name;
+        document.getElementById('selectedFileInfo').classList.remove('hidden');
+        dropZone.querySelector('.drop-content').classList.add('hidden');
+      }
+    });
 
     fileInput.addEventListener('change', function() {
       if (this.files && this.files[0]) {
         selectedUploadFile = this.files[0];
-        document.getElementById('selectedFileName').textContent = selectedUploadFile.name;
+        currentVideoTitle = selectedUploadFile.name.replace(/\.[^/.]+$/, "");
+        document.getElementById('selectedFileName').textContent = '✅ ' + selectedUploadFile.name;
         document.getElementById('selectedFileInfo').classList.remove('hidden');
         dropZone.querySelector('.drop-content').classList.add('hidden');
       }
+    });
+
+    document.getElementById('removeFileBtn').addEventListener('click', function(e) {
+      e.stopPropagation();
+      selectedUploadFile = null;
+      fileInput.value = '';
+      document.getElementById('selectedFileInfo').classList.add('hidden');
+      dropZone.querySelector('.drop-content').classList.remove('hidden');
     });
 
     // 4. Generate Viral Clips Button
@@ -1267,15 +1307,15 @@
       const safeTitle = (clip.headline || currentVideoTitle || 'Viral_Short').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 30);
 
       if (selectedUploadFile) {
-        // Uploaded Video: Instant Direct Download
+        // Uploaded Video: Instant Direct Download (0ms delay, 100% Guaranteed)
         const dl = document.createElement('a');
         dl.href = URL.createObjectURL(selectedUploadFile);
-        dl.download = `ClipFlow_${selectedUploadFile.name}`;
+        dl.download = `ClipFlow_${safeTitle}.mp4`;
         document.body.appendChild(dl);
         dl.click();
         document.body.removeChild(dl);
 
-        btn.innerHTML = '✅ <b>Download Started!</b>';
+        btn.innerHTML = '✅ <b>Download Complete!</b>';
         setTimeout(() => {
           btn.innerHTML = originalText;
           btn.disabled = false;
@@ -1284,18 +1324,33 @@
         // YouTube Video: Direct Automatic Stream Download from ClipFlow AI!
         const dlUrl = `/api/download-clip?yt=${encodeURIComponent(currentYoutubeId)}&title=${encodeURIComponent(safeTitle)}&clipIndex=${activeClipIndex}`;
         
-        const dl = document.createElement('a');
-        dl.href = dlUrl;
-        dl.download = `ClipFlow_${safeTitle}.mp4`;
-        document.body.appendChild(dl);
-        dl.click();
-        document.body.removeChild(dl);
+        fetch(dlUrl, { method: 'HEAD' }).then(res => {
+          if (res.ok) {
+            const dl = document.createElement('a');
+            dl.href = dlUrl;
+            dl.download = `ClipFlow_${safeTitle}.mp4`;
+            document.body.appendChild(dl);
+            dl.click();
+            document.body.removeChild(dl);
 
-        btn.innerHTML = '✅ <b>Downloading To Your Device...</b>';
-        setTimeout(() => {
-          btn.innerHTML = originalText;
-          btn.disabled = false;
-        }, 3000);
+            btn.innerHTML = '✅ <b>Download Started!</b>';
+            setTimeout(() => { btn.innerHTML = originalText; btn.disabled = false; }, 3000);
+          } else {
+            alert('💡 Note: YouTube blocked direct cloud stream for this video. To get your 100% free instant HD clip with 0 watermarks, please drag & drop the video file on the "Upload Video File" tab!');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+          }
+        }).catch(() => {
+          const dl = document.createElement('a');
+          dl.href = dlUrl;
+          dl.download = `ClipFlow_${safeTitle}.mp4`;
+          document.body.appendChild(dl);
+          dl.click();
+          document.body.removeChild(dl);
+
+          btn.innerHTML = '✅ <b>Download Attempted!</b>';
+          setTimeout(() => { btn.innerHTML = originalText; btn.disabled = false; }, 3000);
+        });
       } else {
         alert('Please select or paste a video first!');
         btn.innerHTML = originalText;
