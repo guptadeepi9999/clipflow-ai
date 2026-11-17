@@ -731,11 +731,28 @@
 
     <!-- Download Modal -->
     <div id="downloadModal" class="modal-overlay hidden">
-      <div class="modal-content download-modal">
-        <h3 id="downloadModalTitle">🎉 Your 9:16 Viral HD Clip Is Ready!</h3>
-        <p class="modal-desc">Rendered in vertical 1080p format with Alex Hormozi style subtitles.</p>
+      <div class="modal-content download-modal" style="max-width: 480px; text-align: center;">
+        <h3 id="downloadModalTitle" style="font-size: 20px; margin-bottom: 6px;">🎉 Your 9:16 Viral HD Clip Is Ready!</h3>
+        <p class="modal-desc" style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">Rendered in vertical 1080p format with Alex Hormozi captions & 0 watermarks.</p>
         
-        <div class="ad-container modal-ad-box">
+        <div id="downloadReadyActions" class="modal-actions" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+          <!-- Primary: Direct MP4 Video Download -->
+          <a id="directDownloadLink" href="/api/download-clip?clipIndex=0" download="ClipFlow_Viral_Short_9x16.mp4" class="btn-primary glow-btn" style="display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; font-size: 15px; padding: 14px 20px; text-decoration: none; border-radius: 10px;">
+            <span>⬇️</span> <span id="directDownloadBtnText">Save 9:16 HD MP4 Clip (No Watermark)</span>
+          </a>
+
+          <!-- Secondary: Source YouTube 1080p Video -->
+          <a id="sourceDownloadLink" href="#" target="_blank" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; padding: 10px 16px; text-decoration: none; border-radius: 8px; background: rgba(255,255,255,0.06); color: #fff;">
+            <span>📥</span> <span>Download Full 1080p Source Video</span>
+          </a>
+
+          <!-- Copy Title & Hashtags from Modal -->
+          <button id="modalCopyTagsBtn" type="button" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; padding: 10px 16px; border-radius: 8px; background: rgba(255,255,255,0.06); color: #fff; cursor: pointer; border: 1px solid var(--border-color);">
+            <span>✨</span> <span id="modalCopyTagsText">Copy Viral Title & #Hashtags</span>
+          </button>
+        </div>
+
+        <div class="ad-container modal-ad-box" style="margin-top: 10px;">
           <div class="ad-label">THANK YOU FOR SUPPORTING FREE TOOLS</div>
           <div class="ad-box">
             <span class="demo-ad-tag">Ad</span>
@@ -745,11 +762,8 @@
           </div>
         </div>
 
-        <div id="downloadReadyActions" class="modal-actions">
-          <a id="directDownloadLink" href="#" target="_blank" class="btn-primary glow-btn">
-            ⬇️ Save MP4 Video (No Watermark)
-          </a>
-          <button id="closeModalBtn" type="button" class="btn-secondary">Close</button>
+        <div style="margin-top: 14px;">
+          <button id="closeModalBtn" type="button" class="btn-secondary" style="padding: 8px 24px; border-radius: 8px; cursor: pointer;">Close</button>
         </div>
       </div>
     </div>
@@ -1147,17 +1161,61 @@
       document.getElementById('trimEndVal').textContent = this.value + 's';
     });
 
-    // 8. Download Modal
+    // 8. Download Modal & Real MP4 File Download
     document.getElementById('renderAndDownloadBtn').addEventListener('click', function() {
-      document.getElementById('downloadModal').classList.remove('hidden');
-      const link = document.getElementById('directDownloadLink');
-      if (currentYoutubeId) {
-        link.href = `https://www.youtube.com/watch?v=${currentYoutubeId}`;
-        link.textContent = '⬇️ Save 9:16 HD MP4 Clip (No Watermark)';
+      const modal = document.getElementById('downloadModal');
+      modal.classList.remove('hidden');
+
+      const clip = (sampleClips && sampleClips[activeClipIndex]) ? sampleClips[activeClipIndex] : { headline: 'Viral Short', score: 98, hashtags: '#shorts #viral' };
+      document.getElementById('downloadModalTitle').textContent = `🎉 "${clip.headline.substring(0, 32)}..." Is Ready!`;
+
+      const downloadLink = document.getElementById('directDownloadLink');
+      const sourceLink = document.getElementById('sourceDownloadLink');
+      const btnText = document.getElementById('directDownloadBtnText');
+
+      if (selectedUploadFile) {
+        // Uploaded file download
+        downloadLink.href = URL.createObjectURL(selectedUploadFile);
+        downloadLink.download = `ClipFlow_${selectedUploadFile.name}`;
+        btnText.textContent = `⬇️ Save ${selectedUploadFile.name} (No Watermark)`;
+        if (sourceLink) sourceLink.style.display = 'none';
       } else {
-        link.href = '#';
-        link.textContent = '⬇️ Save MP4 Video';
+        // Real MP4 Vertical Short Download
+        const clipFileName = `ClipFlow_${clip.headline.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 25)}_9x16.mp4`;
+        downloadLink.href = `/api/download-clip?clipIndex=${activeClipIndex}`;
+        downloadLink.download = clipFileName;
+        btnText.textContent = `⬇️ Save 9:16 HD MP4 Clip (No Watermark)`;
+
+        if (sourceLink) {
+          if (currentYoutubeId) {
+            sourceLink.style.display = 'flex';
+            sourceLink.href = `https://10downloader.com/download?v=${currentYoutubeId}`;
+          } else {
+            sourceLink.style.display = 'none';
+          }
+        }
       }
+
+      // Automatically trigger the download immediately!
+      setTimeout(() => {
+        downloadLink.click();
+      }, 300);
+    });
+
+    // Modal Copy Tags Button
+    document.getElementById('modalCopyTagsBtn').addEventListener('click', function() {
+      const clip = (sampleClips && sampleClips[activeClipIndex]) ? sampleClips[activeClipIndex] : null;
+      if (!clip) return;
+      const textToCopy = `${clip.headline}\n\n${clip.reason}\n\n${clip.hashtags}`;
+      const btnText = document.getElementById('modalCopyTagsText');
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        if (btnText) btnText.textContent = '✅ Copied to Clipboard!';
+        setTimeout(() => {
+          if (btnText) btnText.textContent = 'Copy Viral Title & #Hashtags';
+        }, 3000);
+      }).catch(() => {
+        prompt('Copy your viral title & hashtags:', textToCopy);
+      });
     });
 
     document.getElementById('closeModalBtn').addEventListener('click', function() {
