@@ -1,25 +1,22 @@
-FROM node:18-slim
+FROM node:20-alpine
 
-# Install FFmpeg, Python3 (yt-dlp ke liye), aur curl
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ffmpeg \
-    python3 \
-    curl \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install yt-dlp latest release
-RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp \
-    && chmod a+rx /usr/local/bin/yt-dlp
+# Install FFmpeg, yt-dlp, and python3 directly via Alpine package manager
+RUN apk add --no-cache ffmpeg yt-dlp python3
 
 WORKDIR /app
 
-# Install Node.js dependencies
+# Install app dependencies
 COPY package*.json ./
-RUN npm install
+RUN npm install --production
 
-# Copy project files
+# Bundle app source
 COPY . .
 
-# Start Node.js server
+# Ensure working directories
+RUN mkdir -p uploads output temp public
+
+EXPOSE 3000
+ENV PORT=3000
+ENV NODE_ENV=production
+
 CMD ["node", "server.js"]

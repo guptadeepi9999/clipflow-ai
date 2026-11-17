@@ -4,7 +4,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
-const { spawn } = require('child_process');
+const http = require('http');
+const { spawn, execFile } = require('child_process');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 require('dotenv').config();
 
@@ -203,53 +204,8 @@ app.post('/api/process-start', upload.single('videoFile'), async (req, res) => {
     project.message = 'Generating 9:16 cuts and animated captions...';
     project.step = 3;
 
-    // Generate high-converting Opus Clip style clips
-    const sampleClips = [
-      {
-        id: `clip-${Date.now()}-0`,
-        headline: "The Golden Rule That Changes Everything 🔥",
-        virality_score: 98,
-        hook_score: 97,
-        start_time: 12.0,
-        end_time: 42.0,
-        hook_reason: "Contrarian hook in first 3 seconds, creates immense curiosity gap",
-        summary: "Explaining the critical mental shift required before breaking through.",
-        sample_captions: ["LISTEN VERY CAREFULLY", "NOBODY IS GOING TO HAND IT TO YOU", "TAKE FULL OWNERSHIP", "THAT IS THE REAL SECRET"]
-      },
-      {
-        id: `clip-${Date.now()}-1`,
-        headline: "Why 99% Of People Feel Stuck 🤯",
-        virality_score: 95,
-        hook_score: 93,
-        start_time: 45.0,
-        end_time: 75.0,
-        hook_reason: "High emotional resonance, identifies viewer pain point instantly",
-        summary: "Revealing the #1 trap keeping average people in comfort zones.",
-        sample_captions: ["IF YOU FEEL STUCK TODAY", "IT IS NOT LACK OF TALENT", "IT IS LACK OF FOCUS", "CHANGE THIS ONE HABIT"]
-      },
-      {
-        id: `clip-${Date.now()}-2`,
-        headline: "The Brutal Truth Nobody Tells You 🤫",
-        virality_score: 92,
-        hook_score: 90,
-        start_time: 80.0,
-        end_time: 110.0,
-        hook_reason: "Controversial reality check, high completion and replay rate",
-        summary: "A powerful perspective on compounding discipline over motivation.",
-        sample_captions: ["COMFORT IS YOUR BIGGEST TRAP", "EVERY TIME YOU HESITATE", "SOMEONE ELSE TAKES ACTION", "START RIGHT NOW"]
-      },
-      {
-        id: `clip-${Date.now()}-3`,
-        headline: "How The Top 1% Actually Think 🧠",
-        virality_score: 89,
-        hook_score: 88,
-        start_time: 120.0,
-        end_time: 150.0,
-        hook_reason: "Framework breakdown with step-by-step actionable advice",
-        summary: "Comparing average thinking patterns with high performers.",
-        sample_captions: ["AVERAGE MINDS DISCUSS PEOPLE", "GREAT MINDS DISCUSS SYSTEMS", "BUILD DAILY ROUTINES", "WIN EVERY SINGLE DAY"]
-      }
-    ];
+    // Generate high-converting Opus Clip style clips (10 Dynamic Viral Shorts tailored to the video)
+    const sampleClips = generate10ViralClips(title, 600);
 
     project.clips = sampleClips;
     project.progressPercent = 100;
@@ -294,16 +250,14 @@ app.get('/api/preview/:projectId', (req, res) => {
 // 6. Direct Automatic Video Download Endpoint (100% Real Stream - No External Sites, No Redirects!)
 app.get('/api/download-clip', async (req, res) => {
   const ytId = req.query.yt;
+  const projectId = req.query.projectId;
   const rawTitle = req.query.title || 'Viral_Short';
   const cleanTitle = rawTitle.replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 35);
   const fileName = `ClipFlow_${cleanTitle}.mp4`;
 
-  res.setHeader('Content-Type', 'video/mp4');
-  res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-
   // 1. If project was uploaded local video file
-  if (req.query.projectId) {
-    const p = activeProjects.get(req.query.projectId);
+  if (projectId) {
+    const p = activeProjects.get(projectId);
     if (p && p.videoFilePath && fs.existsSync(p.videoFilePath)) {
       return res.download(p.videoFilePath, fileName);
     }
@@ -312,35 +266,76 @@ app.get('/api/download-clip', async (req, res) => {
   // 2. Direct YouTube video stream from YouTube CDN directly into user's download bar!
   if (ytId) {
     const ytUrl = `https://www.youtube.com/watch?v=${ytId}`;
-    const ytdlpBin = process.platform === 'win32'
-      ? 'C:\\Users\\vc\\AppData\\Local\\Microsoft\\WinGet\\Packages\\yt-dlp.yt-dlp_Microsoft.Winget.Source_8wekyb3d8bbwe\\yt-dlp.exe'
-      : 'yt-dlp';
+    const winBin = 'C:\\Users\\vc\\AppData\\Local\\Microsoft\\WinGet\\Packages\\yt-dlp.yt-dlp_Microsoft.Winget.Source_8wekyb3d8bbwe\\yt-dlp.exe';
+    const ytdlpBin = (process.platform === 'win32' && fs.existsSync(winBin)) ? winBin : 'yt-dlp';
 
-    const { exec } = require('child_process');
-    exec(`"${ytdlpBin}" -g -f 18 "${ytUrl}"`, (err, stdout, stderr) => {
+    const ytdlpArgs = [
+      '--no-warnings',
+      '--js-runtimes', 'node',
+      '--extractor-args', 'youtube:player_client=mweb,android',
+      '-g',
+      '-f', '18/22/best[ext=mp4]/best',
+      ytUrl
+    ];
+
+    execFile(ytdlpBin, ytdlpArgs, { timeout: 25000 }, (err, stdout, stderr) => {
       if (!err && stdout && stdout.trim().startsWith('http')) {
         const streamUrl = stdout.trim().split('\n')[0];
-        console.log(`Streaming real video for ${ytId} directly to client...`);
+        console.log(`[ClipFlow] Streaming real video for ${ytId} directly to client...`);
 
-        https.get(streamUrl, remoteRes => {
-          if (remoteRes.statusCode === 200) {
-            remoteRes.pipe(res);
-          } else {
-            res.redirect(streamUrl);
+        const streamVideo = (url, redirectCount = 0) => {
+          if (redirectCount > 4) {
+            console.error('[ClipFlow] Too many stream redirects');
+            if (!res.headersSent) res.status(502).json({ error: 'Stream redirect loop' });
+            return;
           }
-        }).on('error', () => {
-          res.redirect(streamUrl);
-        });
+
+          const client = url.startsWith('https:') ? https : http;
+          const reqStream = client.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, remoteRes => {
+            // Follow redirect if 301/302/307
+            if (remoteRes.statusCode === 301 || remoteRes.statusCode === 302 || remoteRes.statusCode === 307) {
+              const location = remoteRes.headers.location;
+              if (location) {
+                return streamVideo(location, redirectCount + 1);
+              }
+            }
+
+            if (remoteRes.statusCode === 200) {
+              res.setHeader('Content-Type', 'video/mp4');
+              res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+              if (remoteRes.headers['content-length']) {
+                res.setHeader('Content-Length', remoteRes.headers['content-length']);
+              }
+              remoteRes.pipe(res);
+            } else {
+              console.warn(`[ClipFlow] Remote CDN returned HTTP ${remoteRes.statusCode}`);
+              if (!res.headersSent) {
+                res.status(502).json({ error: `CDN returned status ${remoteRes.statusCode}` });
+              }
+            }
+          });
+
+          reqStream.on('error', streamErr => {
+            console.error('[ClipFlow] Stream pipe error:', streamErr.message);
+            if (!res.headersSent) {
+              res.status(500).json({ error: 'Error streaming video data' });
+            }
+          });
+        };
+
+        streamVideo(streamUrl);
         return;
       }
 
-      console.warn('Stream extraction fallback:', err ? err.message : 'no url');
-      res.status(500).send('Direct stream could not be loaded');
+      console.warn('[ClipFlow] Extraction failed:', err ? err.message : 'no url', stderr);
+      if (!res.headersSent) {
+        res.status(500).json({ error: 'Unable to extract video stream. Please verify the YouTube link.' });
+      }
     });
     return;
   }
 
-  res.status(400).send('No video specified for download');
+  res.status(400).json({ error: 'No video specified for download' });
 });
 
 // 7. Settings
