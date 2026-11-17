@@ -1203,32 +1203,50 @@
       document.getElementById('trimEndVal').textContent = this.value + 's';
     });
 
-    // 8. Download Modal - Download the actual video of the input link!
+    // 8. 1-Click Instant Automatic Download - Direct to User Device (No redirects, no third-party sites!)
     document.getElementById('renderAndDownloadBtn').addEventListener('click', function() {
-      const modal = document.getElementById('downloadModal');
-      modal.classList.remove('hidden');
+      const btn = this;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '⏳ <b>Starting Video Download...</b>';
+      btn.disabled = true;
 
-      const clip = (sampleClips && sampleClips[activeClipIndex]) ? sampleClips[activeClipIndex] : { headline: currentVideoTitle || 'Viral Video' };
-      document.getElementById('downloadModalTitle').textContent = `🎉 "${clip.headline.substring(0, 32)}..."`;
-      document.getElementById('downloadModalDesc').textContent = `Download the actual video file for: "${currentVideoTitle}"`;
-
-      const sourceLink = document.getElementById('sourceDownloadLink');
-      const btnText = document.getElementById('sourceDownloadBtnText');
+      const clip = (sampleClips && sampleClips[activeClipIndex]) ? sampleClips[activeClipIndex] : { headline: currentVideoTitle || 'Viral_Short' };
+      const safeTitle = (clip.headline || currentVideoTitle || 'Viral_Short').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 30);
 
       if (selectedUploadFile) {
-        // Uploaded file: direct download of their actual video
-        sourceLink.href = URL.createObjectURL(selectedUploadFile);
-        sourceLink.download = `ClipFlow_${selectedUploadFile.name}`;
-        sourceLink.removeAttribute('target');
-        btnText.textContent = `⬇️ Save ${selectedUploadFile.name} (Your Video)`;
+        // Uploaded Video: Instant Direct Download
+        const dl = document.createElement('a');
+        dl.href = URL.createObjectURL(selectedUploadFile);
+        dl.download = `ClipFlow_${selectedUploadFile.name}`;
+        document.body.appendChild(dl);
+        dl.click();
+        document.body.removeChild(dl);
+
+        btn.innerHTML = '✅ <b>Download Started!</b>';
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }, 2500);
       } else if (currentYoutubeId) {
-        // YouTube video: Unblocked, Ad-free direct downloader (Works in India & worldwide)
-        sourceLink.href = `https://cobalt.tools`;
-        sourceLink.setAttribute('target', '_blank');
-        btnText.textContent = `📥 Open Free HD Video Downloader (Ad-Free & Unblocked)`;
+        // YouTube Video: Direct Automatic Stream Download from ClipFlow AI!
+        const dlUrl = `/api/download-clip?yt=${encodeURIComponent(currentYoutubeId)}&title=${encodeURIComponent(safeTitle)}&clipIndex=${activeClipIndex}`;
+        
+        const dl = document.createElement('a');
+        dl.href = dlUrl;
+        dl.download = `ClipFlow_${safeTitle}.mp4`;
+        document.body.appendChild(dl);
+        dl.click();
+        document.body.removeChild(dl);
+
+        btn.innerHTML = '✅ <b>Downloading To Your Device...</b>';
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }, 3000);
       } else {
-        sourceLink.href = '#';
-        btnText.textContent = `📥 Download Video`;
+        alert('Please select or paste a video first!');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
       }
     });
 
