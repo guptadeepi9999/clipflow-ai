@@ -292,56 +292,25 @@ app.get('/api/preview/:projectId', (req, res) => {
 });
 
 // 6. Direct Render / Download Clip
-app.post('/api/render-clip', async (req, res) => {
-  const { projectId, clipId } = req.body;
-  const fileName = `clip-${projectId || 'viral'}-${clipId || 0}.mp4`;
-  res.json({
-    success: true,
-    message: 'HD Clip ready for download with zero watermarks!',
-    downloadUrl: `/api/download-clip?clipIndex=0`,
-    fileName
-  });
-});
-
 app.get('/api/download-clip', (req, res) => {
+  const ytId = req.query.yt;
   const clipIndex = parseInt(req.query.clipIndex) || 0;
-  const fileName = `ClipFlow_AI_Viral_Short_${clipIndex + 1}.mp4`;
 
-  // 1. Check local files on server disk
-  const possiblePaths = [
-    path.join(__dirname, 'sample-short.mp4'),
-    path.join(PUBLIC_DIR, `clip-${clipIndex}.mp4`),
-    path.join(PUBLIC_DIR, 'sample-short.mp4'),
-    path.join(__dirname, 'public', `clip-${clipIndex}.mp4`),
-    path.join(__dirname, 'public', 'sample-short.mp4'),
-    path.join(__dirname, 'promo_video', `clip_${clipIndex + 1}.mp4`),
-    path.join(__dirname, 'ClipFlow_AI_Promo_40s.mp4'),
-    path.join(OUTPUT_DIR, 'clip-proj-1794839372871-clip-1794839485168-0.mp4')
-  ];
-
-  for (const p of possiblePaths) {
-    if (fs.existsSync(p)) {
-      res.setHeader('Content-Type', 'video/mp4');
-      return res.download(p, fileName);
+  // 1. If uploaded video file project exists
+  if (req.query.projectId) {
+    const p = activeProjects.get(req.query.projectId);
+    if (p && p.videoFilePath && fs.existsSync(p.videoFilePath)) {
+      return res.download(p.videoFilePath, `ClipFlow_Clip_${clipIndex + 1}.mp4`);
     }
   }
 
-  // 2. Guaranteed Fail-Safe: If local video is missing on Render, stream a reliable public MP4 directly with attachment header!
-  res.setHeader('Content-Type', 'video/mp4');
-  res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+  // 2. For YouTube input: Redirect directly to the actual YouTube video downloader so the user downloads the real video of that link!
+  if (ytId) {
+    return res.redirect(`https://10downloader.com/download?v=${encodeURIComponent(ytId)}`);
+  }
 
-  const fallbackUrl = 'https://www.w3schools.com/html/mov_bbb.mp4';
-  https.get(fallbackUrl, (remoteRes) => {
-    if (remoteRes.statusCode === 200) {
-      remoteRes.pipe(res);
-    } else {
-      if (req.query.yt) return res.redirect(`https://10downloader.com/download?v=${req.query.yt}`);
-      res.status(500).send('Video unavailable');
-    }
-  }).on('error', () => {
-    if (req.query.yt) return res.redirect(`https://10downloader.com/download?v=${req.query.yt}`);
-    res.status(500).send('Download error');
-  });
+  // Fallback
+  res.redirect('/');
 });
 
 app.get('/api/download/:fileName', (req, res) => {
