@@ -380,6 +380,57 @@
     .clip-card-meta { display: flex; gap: 14px; font-size: 12px; color: var(--text-muted); }
     .clip-card-hook { font-size: 13px; color: #cbd5e1; line-height: 1.4; }
 
+    /* Pill Buttons for Quick Controls */
+    .pill-btn {
+      background: #181b29;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pill-btn:hover { background: #232738; color: var(--text-main); }
+    .pill-btn.active { background: var(--primary); border-color: #a78bfa; color: white; }
+
+    /* Creator Copy Button & Toast */
+    .creator-copy-btn {
+      width: 100%;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(6, 182, 212, 0.25));
+      border: 1px solid rgba(139, 92, 246, 0.5);
+      color: #f8fafc;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 12px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.15);
+    }
+    .creator-copy-btn:hover {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.45), rgba(6, 182, 212, 0.45));
+      border-color: #a78bfa;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
+    }
+    .copy-toast {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: 8px;
+      text-align: center;
+      margin-top: 8px;
+    }
+
     /* Modal Overlay */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
     .modal-content { background: #141724; border: 1px solid var(--border-color); border-radius: 20px; width: 100%; max-width: 520px; padding: 26px; }
@@ -520,6 +571,15 @@
               <option value="minimal">Clean Minimal (Modern White Sans)</option>
             </select>
           </div>
+
+          <div class="setting-item">
+            <label>💬 Caption Language (Single Track)</label>
+            <select id="subtitleLangSelect">
+              <option value="en" selected>English Only</option>
+              <option value="hi">Hindi / Hinglish Only</option>
+              <option value="none">No Captions (Off)</option>
+            </select>
+          </div>
         </div>
 
         <!-- Generate Button -->
@@ -601,7 +661,28 @@
             </div>
           </div>
 
+          <!-- Bonus Feature: 1-Click Copy Title & Hashtags (Directly Below Player) -->
+          <div class="creator-quick-actions" style="width: 100%; max-width: 320px; margin: 14px auto 8px auto;">
+            <button type="button" id="copyTagsBtn" class="creator-copy-btn">
+              <span style="font-size: 16px;">✨</span>
+              <span id="copyTagsBtnText">📋 Copy Viral Title & Hashtags</span>
+            </button>
+            <div id="copiedSuccessToast" class="copy-toast hidden">
+              ✅ Title & Viral #Hashtags copied! Ready to paste into YouTube / Instagram.
+            </div>
+          </div>
+
           <div class="player-info-card">
+            <!-- Quick Subtitle Language Switcher -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; background:#0b0d14; border:1px solid var(--border-color); border-radius:10px; padding:8px 12px;">
+              <span style="font-size:12px; color:var(--text-muted); font-weight:600;">💬 Subtitle Track:</span>
+              <div style="display:flex; gap:6px;">
+                <button type="button" id="langEnBtn" class="pill-btn active">English</button>
+                <button type="button" id="langHiBtn" class="pill-btn">Hindi / Hinglish</button>
+                <button type="button" id="langOffBtn" class="pill-btn">Off</button>
+              </div>
+            </div>
+
             <div class="player-clip-header">
               <span id="activeClipScore" class="score-pill">Score: 98/100</span>
               <h3 id="activeClipHeadline">Clip Headline</h3>
@@ -712,6 +793,7 @@
     let sampleClips = [];
     let subtitleTimer = null;
     let selectedUploadFile = null;
+    let currentSubLang = 'en'; // 'en', 'hi', or 'none'
 
     // Helper: Extract YouTube ID (Supports regular, short, shorts, mobile, timestamped)
     function getYoutubeId(url) {
@@ -877,7 +959,9 @@
           start: 12,
           end: 42,
           reason: "High curiosity gap in first 3 seconds, forces viewers to watch till the end.",
-          captions: ["LISTEN VERY CAREFULLY", "NOBODY IS GOING TO HAND IT TO YOU", "TAKE FULL OWNERSHIP", "THAT IS THE REAL SECRET"]
+          captions_en: ["LISTEN VERY CAREFULLY", "NOBODY IS GOING TO HAND IT TO YOU", "TAKE FULL OWNERSHIP", "THAT IS THE REAL SECRET"],
+          captions_hi: ["DHYAN SE SUNO", "KOI AUR NAHI KAREGA", "KHUD PAR BHAROSA RAKHO", "YEHI ASLI SECRET HAI"],
+          hashtags: "#motivation #mindset #growth #viral #shorts #clipflow"
         },
         {
           headline: "Why 99% Of People Fail Early 🤯",
@@ -886,7 +970,9 @@
           start: 48,
           end: 78,
           reason: "Direct emotional pain-point trigger with high replay value.",
-          captions: ["IF YOU FEEL STUCK TODAY", "IT IS NOT LACK OF TALENT", "IT IS LACK OF FOCUS", "CHANGE THIS ONE THING"]
+          captions_en: ["IF YOU FEEL STUCK TODAY", "IT IS NOT LACK OF TALENT", "IT IS LACK OF FOCUS", "CHANGE THIS ONE THING"],
+          captions_hi: ["AGAR AAJ STUCK HO", "TALENT KI KAMI NAHI HAI", "FOCUS KI KAMI HAI", "ISSE AAJ HI BADLO"],
+          hashtags: "#discipline #focus #success #entrepreneur #shorts"
         },
         {
           headline: "The Brutal Truth Nobody Tells You 🤫",
@@ -895,7 +981,9 @@
           start: 85,
           end: 115,
           reason: "Contrarian statement that hooks viewers through controversy.",
-          captions: ["COMFORT IS YOUR BIGGEST TRAP", "EVERY TIME YOU HESITATE", "SOMEONE ELSE WINS", "START RIGHT NOW"]
+          captions_en: ["COMFORT IS YOUR BIGGEST TRAP", "EVERY TIME YOU HESITATE", "SOMEONE ELSE WINS", "START RIGHT NOW"],
+          captions_hi: ["AARAM SABSE BADA JAAL HAI", "JAB BHI AAP SOCHTE HO", "KOI AUR JEET JATA HAI", "ABHI START KARO"],
+          hashtags: "#truth #reality #hustle #action #viral"
         },
         {
           headline: "How Top 1% Actually Think 🧠",
@@ -904,7 +992,9 @@
           start: 125,
           end: 155,
           reason: "High-value framework breakdown optimized for Instagram Reels & TikTok.",
-          captions: ["AVERAGE MINDS TALK ABOUT PEOPLE", "GREAT MINDS BUILD SYSTEMS", "FOCUS ON YOUR INPUTS", "RESULTS WILL FOLLOW"]
+          captions_en: ["AVERAGE MINDS TALK ABOUT PEOPLE", "GREAT MINDS BUILD SYSTEMS", "FOCUS ON YOUR INPUTS", "RESULTS WILL FOLLOW"],
+          captions_hi: ["AVERAGE LOG DUSRO KI BAAT KARTE HAIN", "GREAT MINDS SYSTEMS BANATE HAIN", "INPUT PAR DHYAN DO", "RESULT KHUD AAYEGA"],
+          hashtags: "#top1percent #habits #millionairemindset #shorts"
         }
       ];
 
@@ -961,10 +1051,10 @@
       const ytIframe = document.getElementById('ytEmbedIframe');
 
       if (currentYoutubeId) {
-        // Embed official responsive 9:16 Cropped YouTube Player
+        // Embed official responsive 9:16 Cropped YouTube Player with native CC turned off
         videoPlayer.classList.add('hidden');
         ytIframe.classList.remove('hidden');
-        ytIframe.src = `https://www.youtube.com/embed/${currentYoutubeId}?autoplay=1&start=${clip.start}&end=${clip.end}&controls=1&mute=0&loop=1`;
+        ytIframe.src = `https://www.youtube.com/embed/${currentYoutubeId}?autoplay=1&start=${clip.start}&end=${clip.end}&controls=1&mute=0&loop=1&cc_load_policy=0&iv_load_policy=3&disablekb=1&modestbranding=1&hl=en`;
       } else if (selectedUploadFile) {
         ytIframe.classList.add('hidden');
         videoPlayer.classList.remove('hidden');
@@ -973,12 +1063,30 @@
         videoPlayer.play().catch(() => {});
       }
 
-      // Animated Subtitles
-      startAnimatedCaptions(clip.captions);
+      // Update Subtitles (Always 1 single track or off)
+      updateActiveCaptions();
+    }
+
+    // 1 Track Subtitle Manager (Keeps strictly 1 clean caption)
+    function updateActiveCaptions() {
+      if (!sampleClips || sampleClips.length === 0) return;
+      const clip = sampleClips[activeClipIndex];
+      const overlay = document.getElementById('subtitlesOverlay');
+
+      if (currentSubLang === 'none') {
+        overlay.classList.add('hidden');
+        if (subtitleTimer) clearInterval(subtitleTimer);
+        return;
+      }
+
+      overlay.classList.remove('hidden');
+      const captions = currentSubLang === 'hi' ? clip.captions_hi : clip.captions_en;
+      startAnimatedCaptions(captions);
     }
 
     function startAnimatedCaptions(captions) {
       if (subtitleTimer) clearInterval(subtitleTimer);
+      if (!captions || captions.length === 0) return;
       const subText = document.getElementById('subtitlesText');
       let idx = 0;
       subText.textContent = captions[0];
@@ -988,6 +1096,48 @@
         subText.textContent = captions[idx];
       }, 1600);
     }
+
+    // Subtitle Language Toggle Controls
+    function setSubLang(lang) {
+      currentSubLang = lang;
+      document.getElementById('langEnBtn').classList.toggle('active', lang === 'en');
+      document.getElementById('langHiBtn').classList.toggle('active', lang === 'hi');
+      document.getElementById('langOffBtn').classList.toggle('active', lang === 'none');
+      const sel = document.getElementById('subtitleLangSelect');
+      if (sel) sel.value = lang;
+      updateActiveCaptions();
+    }
+
+    document.getElementById('langEnBtn').addEventListener('click', () => setSubLang('en'));
+    document.getElementById('langHiBtn').addEventListener('click', () => setSubLang('hi'));
+    document.getElementById('langOffBtn').addEventListener('click', () => setSubLang('none'));
+    
+    const subLangSelect = document.getElementById('subtitleLangSelect');
+    if (subLangSelect) {
+      subLangSelect.addEventListener('change', function() {
+        setSubLang(this.value);
+      });
+    }
+
+    // Copy Viral Title & Hashtags to Clipboard
+    document.getElementById('copyTagsBtn').addEventListener('click', function() {
+      const clip = sampleClips[activeClipIndex];
+      if (!clip) return;
+      const textToCopy = `${clip.headline}\n\n${clip.reason}\n\n${clip.hashtags}`;
+      const btnText = document.getElementById('copyTagsBtnText');
+      const toast = document.getElementById('copiedSuccessToast');
+
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        if (btnText) btnText.textContent = '✅ Copied to Clipboard!';
+        if (toast) toast.classList.remove('hidden');
+        setTimeout(() => {
+          if (btnText) btnText.textContent = '📋 Copy Viral Title & Hashtags';
+          if (toast) toast.classList.add('hidden');
+        }, 3000);
+      }).catch(() => {
+        prompt('Copy your viral title & hashtags:', textToCopy);
+      });
+    });
 
     // 7. Trim Controls
     document.getElementById('trimStartRange').addEventListener('input', function() {
