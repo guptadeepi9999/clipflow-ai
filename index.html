@@ -14,13 +14,16 @@
     gtag('config', 'G-93MPB0TF03');
   </script>
 
-  <!-- Monetag Service Worker Registration Script -->
+  <!-- Monetag MultiTag Script (Zone 12279203) -->
+  <script src="https://3nbf4.com/tag.min.js" data-zone="12279203" async data-cfasync="false"></script>
+
+  <!-- Monetag Service Worker Registration -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
         navigator.serviceWorker.register('/sw.js')
           .then(function(reg) { console.log('Monetag SW registered: ', reg.scope); })
-          .catch(function(err) { console.log('Monetag SW registration failed: ', err); });
+          .catch(function(err) { console.log('Monetag SW error: ', err); });
       });
     }
   </script>
@@ -28,1002 +31,370 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Impact&display=swap" rel="stylesheet">
+
   <style>
-:root {
-  --bg-dark: #0a0b10;
-  --bg-card: #12141e;
-  --bg-card-hover: #181b29;
-  --border-color: #232738;
-  --border-glow: #6366f1;
-  --primary: #8b5cf6;
-  --primary-hover: #7c3aed;
-  --primary-glow: rgba(139, 92, 246, 0.4);
-  --accent: #06b6d4;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  background-color: var(--bg-dark);
-  color: var(--text-main);
-  font-family: var(--font-family);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow-x: hidden;
-  background-image: 
-    radial-gradient(circle at 15% 15%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 85% 30%, rgba(6, 182, 212, 0.08) 0%, transparent 40%);
-}
-
-/* Typography & Utilities */
-.gradient-text {
-  background: linear-gradient(135deg, #a78bfa, #38bdf8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.hidden {
-  display: none !important;
-}
-
-/* Navbar */
-.navbar {
-  background: rgba(10, 11, 16, 0.85);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border-color);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  padding: 14px 24px;
-}
-
-.nav-container {
-  max-width: 1280px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.logo-icon {
-  width: 38px;
-  height: 38px;
-  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
-}
-
-.logo-text {
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-}
-
-.badge-free {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  font-size: 11px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 20px;
-  letter-spacing: 0.5px;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.nav-links a {
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-
-.nav-links a:hover {
-  color: var(--text-main);
-}
-
-/* Buttons */
-.btn-primary {
-  background: linear-gradient(135deg, #8b5cf6, #6366f1);
-  color: #ffffff;
-  border: none;
-  font-weight: 700;
-  padding: 12px 24px;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 15px;
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px var(--primary-glow);
-}
-
-.btn-secondary {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
-  font-weight: 600;
-  padding: 10px 18px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.14);
-}
-
-.btn-ghost {
-  background: transparent;
-  color: var(--text-muted);
-  border: 1px solid var(--border-color);
-  padding: 8px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.btn-ghost:hover {
-  color: var(--text-main);
-  border-color: #3f4660;
-}
-
-.glow-btn {
-  box-shadow: 0 0 25px rgba(139, 92, 246, 0.45);
-}
-
-/* Ad Placement Containers */
-.ad-container {
-  margin: 16px auto;
-  text-align: center;
-  max-width: 1280px;
-  padding: 0 20px;
-}
-
-.ad-label {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #64748b;
-  margin-bottom: 6px;
-}
-
-.ad-box {
-  background: #11131e;
-  border: 1px dashed #2b3045;
-  border-radius: 12px;
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: border-color 0.2s;
-}
-
-.ad-box:hover {
-  border-color: #4b5563;
-}
-
-.leaderboard-box {
-  min-height: 80px;
-}
-
-.demo-ad-content {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-  justify-content: center;
-}
-
-.demo-ad-content.horizontal {
-  justify-content: space-between;
-  text-align: left;
-}
-
-.demo-ad-tag {
-  background: #334155;
-  color: #cbd5e1;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-
-.demo-ad-title {
-  font-weight: 700;
-  color: #e2e8f0;
-  font-size: 14px;
-}
-
-.demo-ad-sub {
-  color: #94a3b8;
-  font-size: 13px;
-}
-
-.demo-ad-btn {
-  background: #3b82f6;
-  color: white;
-  border: none;
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* Main Content */
-.main-content {
-  flex: 1;
-  max-width: 1280px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-/* Hero Section */
-.hero-section {
-  text-align: center;
-  padding: 30px 10px 40px;
-}
-
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(99, 102, 241, 0.12);
-  border: 1px solid rgba(99, 102, 241, 0.25);
-  color: #a5b4fc;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 6px 16px;
-  border-radius: 30px;
-  margin-bottom: 20px;
-}
-
-.badge-dot {
-  width: 8px;
-  height: 8px;
-  background: #6366f1;
-  border-radius: 50%;
-  box-shadow: 0 0 8px #6366f1;
-}
-
-.hero-title {
-  font-size: 44px;
-  font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -1px;
-  margin-bottom: 16px;
-  max-width: 850px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.hero-subtitle {
-  font-size: 17px;
-  color: var(--text-muted);
-  max-width: 680px;
-  margin: 0 auto 36px;
-  line-height: 1.5;
-}
-
-/* Input Card */
-.input-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
-  padding: 30px;
-  max-width: 780px;
-  margin: 0 auto;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-  text-align: left;
-}
-
-.input-tabs {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 12px;
-}
-
-.tab-btn {
-  background: transparent;
-  color: var(--text-muted);
-  border: none;
-  font-weight: 600;
-  font-size: 14px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.2s;
-}
-
-.tab-btn.active {
-  background: rgba(139, 92, 246, 0.15);
-  color: #c4b5fd;
-}
-
-.input-group {
-  display: flex;
-  gap: 10px;
-}
-
-.input-group input[type="text"] {
-  flex: 1;
-  background: #0b0d14;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  color: white;
-  padding: 14px 18px;
-  font-size: 15px;
-  font-family: inherit;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.input-group input[type="text"]:focus {
-  border-color: var(--border-glow);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-}
-
-/* YouTube Preview Card */
-.yt-preview-card {
-  margin-top: 14px;
-  background: #0f111a;
-  border: 1px solid #232738;
-  border-radius: 12px;
-  padding: 12px;
-  display: flex;
-  gap: 14px;
-  align-items: center;
-}
-
-.yt-thumb {
-  width: 100px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-.yt-meta h4 {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.yt-meta p {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-/* Drop Zone */
-.drop-zone {
-  border: 2px dashed #2b3045;
-  border-radius: 16px;
-  padding: 40px 20px;
-  text-align: center;
-  cursor: pointer;
-  background: #0b0d14;
-  transition: all 0.2s;
-  position: relative;
-}
-
-.drop-zone:hover, .drop-zone.dragover {
-  border-color: var(--primary);
-  background: rgba(139, 92, 246, 0.04);
-}
-
-.file-input {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.drop-icon {
-  font-size: 38px;
-  margin-bottom: 10px;
-}
-
-.drop-title {
-  font-weight: 700;
-  font-size: 16px;
-  margin-bottom: 4px;
-}
-
-.drop-subtitle {
-  color: var(--text-muted);
-  font-size: 13px;
-}
-
-.selected-file-info {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(139, 92, 246, 0.15);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  padding: 10px 16px;
-  border-radius: 10px;
-  margin-top: 10px;
-}
-
-.btn-remove {
-  background: transparent;
-  color: #f87171;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-/* Settings Grid */
-.settings-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin: 24px 0;
-}
-
-.setting-item label {
-  display: block;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-muted);
-  margin-bottom: 6px;
-}
-
-.setting-item select {
-  width: 100%;
-  background: #0b0d14;
-  border: 1px solid var(--border-color);
-  color: white;
-  border-radius: 10px;
-  padding: 10px 14px;
-  font-size: 13px;
-  font-family: inherit;
-  outline: none;
-  cursor: pointer;
-}
-
-.setting-item select:focus {
-  border-color: var(--primary);
-}
-
-#generateBtn {
-  width: 100%;
-  padding: 16px;
-  font-size: 17px;
-  border-radius: 14px;
-}
-
-/* Processing Section */
-.processing-section {
-  margin: 40px auto;
-  max-width: 780px;
-}
-
-.processing-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
-  padding: 36px 30px;
-  text-align: center;
-}
-
-.processing-title {
-  font-size: 24px;
-  font-weight: 800;
-  margin-bottom: 8px;
-}
-
-.processing-desc {
-  color: var(--text-muted);
-  font-size: 14px;
-  margin-bottom: 30px;
-}
-
-.stepper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 30px;
-}
-
-.step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.step-circle {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #1c2030;
-  border: 2px solid #2b3045;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 14px;
-  color: var(--text-muted);
-  transition: all 0.3s;
-}
-
-.step.active .step-circle {
-  background: var(--primary);
-  border-color: #a78bfa;
-  color: white;
-  box-shadow: 0 0 15px var(--primary-glow);
-}
-
-.step-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.step.active .step-label {
-  color: var(--text-main);
-}
-
-.step-line {
-  flex: 1;
-  height: 2px;
-  background: #232738;
-  margin: 0 10px;
-  margin-top: -20px;
-}
-
-.instream-ad-box {
-  margin-top: 20px;
-}
-
-/* Results Studio Dashboard */
-.results-section {
-  margin-top: 20px;
-}
-
-.results-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.section-title {
-  font-size: 28px;
-  font-weight: 800;
-}
-
-.section-subtitle {
-  color: var(--text-muted);
-  font-size: 14px;
-  margin-top: 4px;
-}
-
-.studio-layout {
-  display: grid;
-  grid-template-columns: 460px 1fr;
-  gap: 24px;
-}
-
-@media (max-width: 900px) {
-  .studio-layout {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Player Panel */
-.player-panel {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.preview-aspect-container {
-  width: 290px;
-  height: 515px; /* 9:16 vertical ratio */
-  background: #000;
-  border-radius: 16px;
-  overflow: hidden;
-  position: relative;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
-  border: 2px solid #232738;
-}
-
-#mainVideoPlayer {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Subtitle Overlay in Player */
-.subtitles-overlay {
-  position: absolute;
-  bottom: 80px;
-  left: 10px;
-  right: 10px;
-  text-align: center;
-  pointer-events: none;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 6px 10px;
-}
-
-.style-hormozi {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  color: #ffeb3b;
-  font-size: 20px;
-  text-shadow: 
-    -2px -2px 0 #000,  
-     2px -2px 0 #000,
-    -2px  2px 0 #000,
-     2px  2px 0 #000,
-     0px 4px 8px rgba(0,0,0,0.8);
-}
-
-.style-beast {
-  font-family: 'Impact', sans-serif;
-  color: #22c55e;
-  font-size: 24px;
-  text-shadow: 0 0 10px rgba(0,0,0,0.9), 2px 2px 0 #000;
-}
-
-.style-neon {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  color: #06b6d4;
-  font-size: 20px;
-  text-shadow: 0 0 10px #06b6d4, 0 0 20px #8b5cf6;
-}
-
-.style-minimal {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  color: #ffffff;
-  font-size: 17px;
-  background: rgba(0,0,0,0.6);
-  border-radius: 8px;
-}
-
-.player-info-card {
-  width: 100%;
-  margin-top: 18px;
-}
-
-.player-clip-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-
-.score-pill {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-  font-size: 12px;
-  font-weight: 800;
-  padding: 4px 10px;
-  border-radius: 20px;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
-}
-
-.clip-reason-text {
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-bottom: 16px;
-}
-
-/* Trim Controls */
-.trim-controls {
-  background: #0b0d14;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
-}
-
-.trim-group {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-
-.trim-group:last-child {
-  margin-bottom: 0;
-}
-
-.trim-group label {
-  width: 90px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.trim-group input[type="range"] {
-  flex: 1;
-  accent-color: var(--primary);
-  cursor: pointer;
-}
-
-.btn-download {
-  width: 100%;
-  padding: 14px;
-  font-size: 15px;
-}
-
-/* Clips List */
-.clips-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.sidebar-heading {
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.clips-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.clip-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 14px;
-  padding: 18px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.clip-card:hover {
-  background: var(--bg-card-hover);
-  border-color: #3b425b;
-}
-
-.clip-card.active {
-  border-color: var(--primary);
-  background: rgba(139, 92, 246, 0.08);
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
-}
-
-.clip-card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.clip-card-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.clip-card-meta {
-  display: flex;
-  gap: 14px;
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.clip-card-hook {
-  font-size: 13px;
-  color: #cbd5e1;
-  line-height: 1.4;
-}
-
-/* Modal Overlay */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.modal-content {
-  background: #141724;
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
-  width: 100%;
-  max-width: 520px;
-  padding: 26px;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.btn-close {
-  background: transparent;
-  color: var(--text-muted);
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-}
-
-.modal-desc {
-  font-size: 14px;
-  color: var(--text-muted);
-  margin-bottom: 20px;
-}
-
-.render-progress-bar {
-  width: 100%;
-  height: 10px;
-  background: #232738;
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 24px;
-}
-
-.render-progress-fill {
-  width: 25%;
-  height: 100%;
-  background: linear-gradient(90deg, #8b5cf6, #06b6d4);
-  border-radius: 10px;
-  transition: width 0.3s;
-  animation: pulseProgress 2s infinite;
-}
-
-@keyframes pulseProgress {
-  0% { opacity: 0.7; }
-  50% { opacity: 1; }
-  100% { opacity: 0.7; }
-}
-
-.modal-ad-box {
-  margin: 16px 0;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 20px;
-}
-
-/* Forms */
-.form-group {
-  margin-bottom: 18px;
-}
-
-.form-group label {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.form-group input[type="text"],
-.form-group input[type="password"] {
-  width: 100%;
-  background: #090a0f;
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  color: white;
-  padding: 10px 14px;
-  font-size: 14px;
-  outline: none;
-}
-
-.form-group small {
-  display: block;
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 4px;
-}
-
-.checkbox-group label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-}
-
-.modal-footer {
-  margin-top: 24px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-/* Footer */
-.footer {
-  border-top: 1px solid var(--border-color);
-  padding: 24px;
-  text-align: center;
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-top: 50px;
-}
-
-.footer-container {
-  max-width: 1280px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 14px;
-}
-
-.footer-links {
-  display: flex;
-  gap: 16px;
-}
-
-.footer-links a {
-  color: var(--text-muted);
-  text-decoration: none;
-}
-
-.footer-links a:hover {
-  color: var(--text-main);
-}
-
-</style>
+    :root {
+      --bg-dark: #0a0b10;
+      --bg-card: #12141e;
+      --bg-card-hover: #181b29;
+      --border-color: #232738;
+      --border-glow: #6366f1;
+      --primary: #8b5cf6;
+      --primary-hover: #7c3aed;
+      --primary-glow: rgba(139, 92, 246, 0.4);
+      --accent: #06b6d4;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 30%, rgba(6, 182, 212, 0.08) 0%, transparent 40%);
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #a78bfa, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hidden { display: none !important; }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(10, 11, 16, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 14px 24px;
+    }
+
+    .nav-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+    }
+    .logo-text { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+
+    .badge-free {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .nav-links { display: flex; align-items: center; gap: 20px; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 500; }
+    .nav-links a:hover { color: var(--text-main); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    /* Ad Placement */
+    .ad-container { margin: 16px auto; text-align: center; max-width: 1280px; padding: 0 20px; }
+    .ad-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-bottom: 6px; }
+    .ad-box {
+      background: #11131e;
+      border: 1px dashed #2b3045;
+      border-radius: 12px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .demo-ad-content { display: flex; align-items: center; gap: 16px; width: 100%; justify-content: center; }
+    .demo-ad-tag { background: #334155; color: #cbd5e1; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+    .demo-ad-title { font-weight: 700; color: #e2e8f0; font-size: 14px; }
+    .demo-ad-sub { color: #94a3b8; font-size: 13px; }
+    .demo-ad-btn { background: #3b82f6; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+    /* Main Content */
+    .main-content { flex: 1; max-width: 1280px; width: 100%; margin: 0 auto; padding: 20px; }
+    .hero-section { text-align: center; padding: 30px 10px 40px; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      color: #a5b4fc;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 30px;
+      margin-bottom: 20px;
+    }
+    .badge-dot { width: 8px; height: 8px; background: #6366f1; border-radius: 50%; box-shadow: 0 0 8px #6366f1; }
+    .hero-title { font-size: 44px; font-weight: 800; line-height: 1.15; letter-spacing: -1px; margin-bottom: 16px; }
+    .hero-subtitle { font-size: 17px; color: var(--text-muted); max-width: 680px; margin: 0 auto 36px; line-height: 1.5; }
+
+    /* Input Card */
+    .input-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 780px;
+      margin: 0 auto;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      text-align: left;
+    }
+
+    .input-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
+    .tab-btn {
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .tab-btn.active { background: rgba(139, 92, 246, 0.15); color: #c4b5fd; }
+
+    .input-group { display: flex; gap: 10px; }
+    .input-group input[type="text"] {
+      flex: 1;
+      background: #0b0d14;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      color: white;
+      padding: 14px 18px;
+      font-size: 15px;
+      outline: none;
+    }
+    .input-group input[type="text"]:focus { border-color: var(--border-glow); }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.14); }
+
+    /* YouTube Preview Card */
+    .yt-preview-card {
+      margin-top: 14px;
+      background: #0f111a;
+      border: 1px solid #232738;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    .yt-thumb { width: 100px; height: 60px; object-fit: cover; border-radius: 8px; }
+    .yt-meta h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .yt-meta p { font-size: 12px; color: var(--text-muted); }
+
+    /* Drop Zone */
+    .drop-zone {
+      border: 2px dashed #2b3045;
+      border-radius: 16px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      background: #0b0d14;
+      position: relative;
+    }
+    .drop-zone:hover { border-color: var(--primary); }
+    .file-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+    .drop-icon { font-size: 38px; margin-bottom: 10px; }
+    .drop-title { font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+    .drop-subtitle { color: var(--text-muted); font-size: 13px; }
+
+    .selected-file-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      padding: 10px 16px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    /* Settings Grid */
+    .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 24px 0; }
+    .setting-item label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+    .setting-item select {
+      width: 100%;
+      background: #0b0d14;
+      border: 1px solid var(--border-color);
+      color: white;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+      color: #ffffff;
+      border: none;
+      font-weight: 700;
+      padding: 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 17px;
+      width: 100%;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--primary-glow); }
+    .glow-btn { box-shadow: 0 0 25px rgba(139, 92, 246, 0.45); }
+
+    /* Processing Section */
+    .processing-section { margin: 40px auto; max-width: 780px; }
+    .processing-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 36px 30px; text-align: center; }
+    .processing-title { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+    .processing-desc { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
+
+    .render-progress-bar { width: 100%; height: 10px; background: #232738; border-radius: 10px; overflow: hidden; margin-bottom: 24px; }
+    .render-progress-fill { width: 25%; height: 100%; background: linear-gradient(90deg, #8b5cf6, #06b6d4); border-radius: 10px; transition: width 0.3s; }
+
+    .stepper { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; }
+    .step { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .step-circle {
+      width: 36px; height: 36px; border-radius: 50%; background: #1c2030; border: 2px solid #2b3045;
+      display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: var(--text-muted);
+    }
+    .step.active .step-circle { background: var(--primary); border-color: #a78bfa; color: white; box-shadow: 0 0 15px var(--primary-glow); }
+    .step-label { font-size: 11px; font-weight: 600; color: var(--text-muted); }
+    .step.active .step-label { color: var(--text-main); }
+    .step-line { flex: 1; height: 2px; background: #232738; margin: 0 10px; margin-top: -20px; }
+
+    /* Results Studio */
+    .results-section { margin-top: 20px; }
+    .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .section-title { font-size: 28px; font-weight: 800; }
+    .section-subtitle { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
+
+    .studio-layout { display: grid; grid-template-columns: 460px 1fr; gap: 24px; }
+    @media (max-width: 900px) { .studio-layout { grid-template-columns: 1fr; } }
+
+    /* Player Panel */
+    .player-panel { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+    .preview-aspect-container {
+      width: 290px;
+      height: 515px; /* 9:16 vertical ratio */
+      background: #000;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+      border: 2px solid #232738;
+    }
+    #mainVideoPlayer { width: 100%; height: 100%; object-fit: cover; }
+    #ytEmbedIframe { position: absolute; top: 0; left: -100%; width: 300%; height: 100%; border: none; }
+
+    /* Subtitle Overlay */
+    .subtitles-overlay {
+      position: absolute;
+      bottom: 80px;
+      left: 10px;
+      right: 10px;
+      text-align: center;
+      pointer-events: none;
+      font-weight: 900;
+      text-transform: uppercase;
+      font-size: 20px;
+      color: #ffeb3b;
+      text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0px 4px 8px rgba(0,0,0,0.8);
+      z-index: 10;
+    }
+
+    .player-info-card { width: 100%; margin-top: 18px; }
+    .player-clip-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .score-pill { background: linear-gradient(135deg, #10b981, #059669); color: white; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 20px; }
+    .clip-reason-text { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+
+    .trim-controls { background: #0b0d14; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; }
+    .trim-group { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .trim-group:last-child { margin-bottom: 0; }
+    .trim-group label { width: 90px; font-size: 12px; font-weight: 600; color: var(--text-muted); }
+    .trim-group input[type="range"] { flex: 1; accent-color: var(--primary); cursor: pointer; }
+
+    /* Clips List */
+    .clips-sidebar { display: flex; flex-direction: column; gap: 16px; }
+    .sidebar-heading { font-size: 18px; font-weight: 700; }
+    .clips-list { display: flex; flex-direction: column; gap: 14px; }
+    .clip-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; gap: 10px; }
+    .clip-card:hover { background: var(--bg-card-hover); border-color: #3b425b; }
+    .clip-card.active { border-color: var(--primary); background: rgba(139, 92, 246, 0.08); box-shadow: 0 0 15px rgba(139, 92, 246, 0.2); }
+    .clip-card-top { display: flex; justify-content: space-between; align-items: center; }
+    .clip-card-title { font-size: 15px; font-weight: 700; color: var(--text-main); }
+    .clip-card-meta { display: flex; gap: 14px; font-size: 12px; color: var(--text-muted); }
+    .clip-card-hook { font-size: 13px; color: #cbd5e1; line-height: 1.4; }
+
+    /* Modal Overlay */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .modal-content { background: #141724; border: 1px solid var(--border-color); border-radius: 20px; width: 100%; max-width: 520px; padding: 26px; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .btn-close { background: transparent; color: var(--text-muted); border: none; font-size: 18px; cursor: pointer; }
+    .modal-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; }
+    .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
+
+    /* Footer */
+    .footer { border-top: 1px solid var(--border-color); padding: 24px; text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 50px; }
+    .footer-container { max-width: 1280px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
+    .footer-links { display: flex; gap: 16px; }
+    .footer-links a { color: var(--text-muted); text-decoration: none; }
+    .footer-links a:hover { color: var(--text-main); }
+  </style>
 </head>
 <body>
   <!-- Header / Navigation -->
@@ -1038,18 +409,15 @@ body {
       <nav class="nav-links">
         <a href="#how-it-works">How It Works</a>
         <a href="#features">Features</a>
-        <button id="openSettingsBtn" class="btn-ghost">
-          ⚙️ Settings & Ads
-        </button>
+        <button id="openSettingsBtn" class="btn-ghost">⚙️ Settings & Ads</button>
       </nav>
     </div>
   </header>
 
-  <!-- Top Leaderboard Ad Slot (Google AdSense 728x90 / Responsive) -->
+  <!-- Top Leaderboard Ad Slot -->
   <div class="ad-container top-ad-banner" id="topAdBanner">
     <div class="ad-label">SPONSORED ADVERTISEMENT</div>
     <div class="ad-box leaderboard-box">
-      <!-- Google AdSense Code Injected Here -->
       <div class="demo-ad-content">
         <span class="demo-ad-tag">Ad</span>
         <span class="demo-ad-title">🚀 Scale Your Social Media Channels 10x Faster</span>
@@ -1078,23 +446,23 @@ body {
       <div class="input-card">
         <!-- Input Tabs -->
         <div class="input-tabs">
-          <button class="tab-btn active" data-tab="youtube">
+          <button class="tab-btn active" data-tab="youtube" id="tabYoutube">
             <span class="tab-icon">▶</span> YouTube Link
           </button>
-          <button class="tab-btn" data-tab="upload">
+          <button class="tab-btn" data-tab="upload" id="tabUpload">
             <span class="tab-icon">📁</span> Upload Video File
           </button>
         </div>
 
         <!-- YouTube Tab -->
-        <div class="tab-content active" id="youtubeTab">
+        <div class="tab-content" id="youtubeTab">
           <div class="input-group">
             <input 
               type="text" 
               id="youtubeUrlInput" 
               placeholder="Paste YouTube video or podcast URL (e.g. https://www.youtube.com/watch?v=...)"
             >
-            <button id="fetchYtBtn" class="btn-secondary">Check</button>
+            <button id="fetchYtBtn" type="button" class="btn-secondary">Check</button>
           </div>
 
           <!-- YouTube Video Live Preview Card -->
@@ -1108,7 +476,7 @@ body {
         </div>
 
         <!-- Upload Tab -->
-        <div class="tab-content" id="uploadTab">
+        <div class="tab-content hidden" id="uploadTab">
           <div class="drop-zone" id="dropZone">
             <input type="file" id="videoFileInput" accept="video/mp4,video/quicktime,video/webm" class="file-input">
             <div class="drop-content">
@@ -1155,7 +523,7 @@ body {
         </div>
 
         <!-- Generate Button -->
-        <button id="generateBtn" class="btn-primary glow-btn">
+        <button id="generateBtn" type="button" class="btn-primary glow-btn">
           <span class="btn-icon">⚡</span> Generate Viral Clips (Free)
         </button>
       </div>
@@ -1168,7 +536,7 @@ body {
         <p class="processing-desc" id="processStatusText">Analyzing speech, extracting best viral hooks, and generating 9:16 vertical cuts...</p>
 
         <div class="render-progress-bar" style="margin: 16px 0 24px 0;">
-          <div class="render-progress-fill" id="liveProcessFill" style="width: 10%;"></div>
+          <div class="render-progress-fill" id="liveProcessFill" style="width: 15%;"></div>
         </div>
 
         <!-- Progress Steps -->
@@ -1194,7 +562,7 @@ body {
           </div>
         </div>
 
-        <!-- High-CTR In-Stream Sponsor Ad Box -->
+        <!-- In-Stream Sponsor Ad Box -->
         <div class="ad-container instream-ad-box">
           <div class="ad-label">SPONSORED BY OUR SUPPORTERS</div>
           <div class="ad-box middle-ad-box">
@@ -1218,7 +586,7 @@ body {
           <h2 class="section-title">Your Generated Viral Clips</h2>
           <p class="section-subtitle" id="projectMetaSubtitle">Selected the highest retention moments from your video.</p>
         </div>
-        <button id="newProjectBtn" class="btn-secondary">＋ Create More Clips</button>
+        <button id="newProjectBtn" type="button" class="btn-secondary">＋ Create More Clips</button>
       </div>
 
       <div class="studio-layout">
@@ -1226,6 +594,7 @@ body {
         <div class="player-panel">
           <div class="preview-aspect-container" id="playerAspectContainer">
             <video id="mainVideoPlayer" controls playsinline></video>
+            <iframe id="ytEmbedIframe" class="hidden" allow="autoplay; encrypted-media"></iframe>
             <!-- Dynamic Overlay Subtitles Preview -->
             <div id="subtitlesOverlay" class="subtitles-overlay style-hormozi">
               <span id="subtitlesText">AI CAPTIONS PREVIEW</span>
@@ -1252,7 +621,7 @@ body {
             </div>
 
             <!-- Download Button -->
-            <button id="renderAndDownloadBtn" class="btn-primary btn-download">
+            <button id="renderAndDownloadBtn" type="button" class="btn-primary btn-download">
               ⬇️ Download HD Clip (100% Free - No Watermark)
             </button>
           </div>
@@ -1279,17 +648,12 @@ body {
       </div>
     </section>
 
-    <!-- Download Modal / Rendering Progress with Ad -->
+    <!-- Download Modal -->
     <div id="downloadModal" class="modal-overlay hidden">
       <div class="modal-content download-modal">
-        <h3 id="downloadModalTitle">Rendering Your 1080p Clip...</h3>
-        <p class="modal-desc">Cropping to 9:16 vertical and burning animated subtitles with FFmpeg...</p>
+        <h3 id="downloadModalTitle">🎉 Your 9:16 Viral HD Clip Is Ready!</h3>
+        <p class="modal-desc">Rendered in vertical 1080p format with Alex Hormozi style subtitles.</p>
         
-        <div class="render-progress-bar">
-          <div class="render-progress-fill" id="renderProgressFill"></div>
-        </div>
-
-        <!-- High-engagement Sponsor Ad in Download Modal -->
         <div class="ad-container modal-ad-box">
           <div class="ad-label">THANK YOU FOR SUPPORTING FREE TOOLS</div>
           <div class="ad-box">
@@ -1300,16 +664,16 @@ body {
           </div>
         </div>
 
-        <div id="downloadReadyActions" class="modal-actions hidden">
-          <a id="directDownloadLink" href="#" class="btn-primary glow-btn" download>
-            ⬇️ Save MP4 Video to Device
+        <div id="downloadReadyActions" class="modal-actions">
+          <a id="directDownloadLink" href="#" target="_blank" class="btn-primary glow-btn">
+            ⬇️ Save MP4 Video (No Watermark)
           </a>
-          <button id="closeModalBtn" class="btn-secondary">Close</button>
+          <button id="closeModalBtn" type="button" class="btn-secondary">Close</button>
         </div>
       </div>
     </div>
 
-    <!-- Settings & Ads Modal -->
+    <!-- Settings Modal -->
     <div id="settingsModal" class="modal-overlay hidden">
       <div class="modal-content">
         <div class="modal-header">
@@ -1317,27 +681,13 @@ body {
           <button id="closeSettingsModalBtn" class="btn-close">✕</button>
         </div>
         <div class="modal-body">
-          <div class="form-group">
-            <label>Google Gemini API Key (Optional)</label>
-            <input type="password" id="geminiKeyInput" placeholder="AIzaSy...">
-            <small>If provided, Gemini 1.5/2.0 Flash is used for transcript and hook detection. If blank, built-in smart heuristic virality detection is used.</small>
-          </div>
-
-          <div class="form-group">
-            <label>Google AdSense Publisher ID</label>
-            <input type="text" id="adsenseIdInput" placeholder="pub-xxxxxxxxxxxxxxxx">
-            <small>Enter your AdSense publisher ID to monetize your site automatically.</small>
-          </div>
-
-          <div class="form-group checkbox-group">
-            <label>
-              <input type="checkbox" id="enableAdsCheckbox" checked>
-              Show Ad Slots (Keep enabled to generate ad revenue)
-            </label>
+          <div style="margin-bottom:15px;">
+            <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600;">Monetag Ad Tag Status</label>
+            <p style="color:#10b981;font-size:13px;">✅ Monetag Zone ID 12279203 is Active</p>
           </div>
         </div>
-        <div class="modal-footer">
-          <button id="saveSettingsBtn" class="btn-primary">Save Settings</button>
+        <div class="modal-footer" style="text-align:right;">
+          <button id="saveSettingsBtn" class="btn-secondary">Close</button>
         </div>
       </div>
     </div>
@@ -1354,485 +704,332 @@ body {
     </div>
   </footer>
 
+  <!-- Bulletproof Interactive JavaScript Controller -->
   <script>
-// ClipFlow AI - Frontend Controller
+    let currentYoutubeId = null;
+    let currentVideoTitle = 'YouTube Video';
+    let activeClipIndex = 0;
+    let sampleClips = [];
+    let subtitleTimer = null;
+    let selectedUploadFile = null;
 
-let currentProjectId = null;
-let currentClips = [];
-let activeClip = null;
-let selectedFile = null;
-let subtitleTimer = null;
+    // Helper: Extract YouTube ID (Supports regular, short, shorts, mobile, timestamped)
+    function getYoutubeId(url) {
+      if (!url) return null;
+      const clean = url.trim();
+      const m = clean.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([a-zA-Z0-9_-]{11})/i);
+      if (m) return m[1];
+      if (/^[a-zA-Z0-9_-]{11}$/.test(clean)) return clean;
+      return null;
+    }
 
-document.addEventListener('DOMContentLoaded', () => {
-  initTabs();
-  initUpload();
-  initYouTube();
-  initSettings();
-  initPlayer();
-  initRender();
-});
-
-// 1. Tab Switching
-function initTabs() {
-  const tabs = document.querySelectorAll('.tab-btn');
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-
-      const target = tab.dataset.tab;
-      document.getElementById('youtubeTab').classList.toggle('active', target === 'youtube');
-      document.getElementById('uploadTab').classList.toggle('active', target === 'upload');
+    // 1. Tab Switching
+    document.getElementById('tabYoutube').addEventListener('click', function() {
+      this.classList.add('active');
+      document.getElementById('tabUpload').classList.remove('active');
+      document.getElementById('youtubeTab').classList.remove('hidden');
+      document.getElementById('uploadTab').classList.add('hidden');
     });
-  });
-}
 
-// 2. YouTube Input & Preview
-function initYouTube() {
-  const ytInput = document.getElementById('youtubeUrlInput');
-  const fetchBtn = document.getElementById('fetchYtBtn');
-  const previewCard = document.getElementById('ytPreviewCard');
-  const ytThumb = document.getElementById('ytThumb');
-  const ytTitle = document.getElementById('ytTitle');
-  const ytDuration = document.getElementById('ytDuration');
-
-  async function checkUrl() {
-    const url = ytInput.value.trim();
-    if (!url || (!url.includes('youtube.com') && !url.includes('youtu.be'))) {
-      alert('Please enter a valid YouTube URL');
-      return;
-    }
-
-    fetchBtn.textContent = 'Checking...';
-    try {
-      const res = await fetch('/api/youtube-info', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url })
-      });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-
-      ytThumb.src = data.thumbnail;
-      ytTitle.textContent = data.title;
-      const min = Math.floor(data.duration / 60);
-      const sec = Math.floor(data.duration % 60);
-      ytDuration.textContent = `Duration: ${min}m ${sec}s`;
-      previewCard.classList.remove('hidden');
-    } catch (e) {
-      console.warn('Could not load preview:', e.message);
-      // We still allow processing even if preview fails
-    } finally {
-      fetchBtn.textContent = 'Check';
-    }
-  }
-
-  fetchBtn.addEventListener('click', checkUrl);
-  ytInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') checkUrl();
-  });
-}
-
-// 3. File Upload Drag & Drop
-function initUpload() {
-  const dropZone = document.getElementById('dropZone');
-  const fileInput = document.getElementById('videoFileInput');
-  const selectedInfo = document.getElementById('selectedFileInfo');
-  const fileNameSpan = document.getElementById('selectedFileName');
-  const removeBtn = document.getElementById('removeFileBtn');
-
-  ['dragenter', 'dragover'].forEach(name => {
-    dropZone.addEventListener(name, (e) => {
-      e.preventDefault();
-      dropZone.classList.add('dragover');
+    document.getElementById('tabUpload').addEventListener('click', function() {
+      this.classList.add('active');
+      document.getElementById('tabYoutube').classList.remove('active');
+      document.getElementById('uploadTab').classList.remove('hidden');
+      document.getElementById('youtubeTab').classList.add('hidden');
     });
-  });
 
-  ['dragleave', 'drop'].forEach(name => {
-    dropZone.addEventListener(name, (e) => {
-      e.preventDefault();
-      dropZone.classList.remove('dragover');
-    });
-  });
-
-  dropZone.addEventListener('drop', (e) => {
-    const files = e.dataTransfer.files;
-    if (files.length > 0) handleFile(files[0]);
-  });
-
-  fileInput.addEventListener('change', () => {
-    if (fileInput.files.length > 0) handleFile(fileInput.files[0]);
-  });
-
-  removeBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    selectedFile = null;
-    fileInput.value = '';
-    selectedInfo.classList.add('hidden');
-    dropZone.querySelector('.drop-content').classList.remove('hidden');
-  });
-
-  function handleFile(file) {
-    if (!file.type.startsWith('video/')) {
-      alert('Please upload a valid video file (MP4, MOV, WebM)');
-      return;
-    }
-    selectedFile = file;
-    fileNameSpan.textContent = `${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB)`;
-    selectedInfo.classList.remove('hidden');
-    dropZone.querySelector('.drop-content').classList.add('hidden');
-  }
-}
-
-// 4. Generate Button & Real-time AI Processing
-let pollingInterval = null;
-
-document.getElementById('generateBtn').addEventListener('click', async () => {
-  const isYtTab = document.querySelector('.tab-btn[data-tab="youtube"]').classList.contains('active');
-  const ytUrl = document.getElementById('youtubeUrlInput').value.trim();
-  const clipLength = document.getElementById('clipLengthSelect').value;
-  const aspectRatio = document.getElementById('aspectRatioSelect').value;
-  const subtitleStyle = document.getElementById('subtitleStyleSelect').value;
-
-  if (isYtTab && !ytUrl) {
-    alert('Please enter a YouTube video URL');
-    return;
-  }
-  if (!isYtTab && !selectedFile) {
-    alert('Please select or drop a video file');
-    return;
-  }
-
-  // Show processing section
-  document.querySelector('.hero-section').classList.add('hidden');
-  document.getElementById('processingSection').classList.remove('hidden');
-  document.getElementById('resultsSection').classList.add('hidden');
-
-  const statusText = document.getElementById('processStatusText');
-  const progressFill = document.getElementById('liveProcessFill');
-  statusText.textContent = 'Initializing video ingestion...';
-  progressFill.style.width = '8%';
-  animateStep(1);
-
-  try {
-    let startRes;
-    if (isYtTab) {
-      startRes = await fetch('/api/process-start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          youtubeUrl: ytUrl,
-          clipLength,
-          aspectRatio,
-          subtitleStyle
-        })
-      });
-    } else {
-      const formData = new FormData();
-      formData.append('videoFile', selectedFile);
-      formData.append('clipLength', clipLength);
-      formData.append('aspectRatio', aspectRatio);
-      formData.append('subtitleStyle', subtitleStyle);
-
-      startRes = await fetch('/api/process-start', {
-        method: 'POST',
-        body: formData
-      });
-    }
-
-    const startData = await startRes.json();
-    if (!startData.success) throw new Error(startData.error || 'Failed to start processing');
-
-    currentProjectId = startData.projectId;
-
-    // Start Real-Time Progress Polling
-    if (pollingInterval) clearInterval(pollingInterval);
-    pollingInterval = setInterval(async () => {
-      try {
-        const pollRes = await fetch(`/api/project-status/${currentProjectId}`);
-        const pollData = await pollRes.json();
-
-        if (pollData.error) {
-          clearInterval(pollingInterval);
-          throw new Error(pollData.error);
-        }
-
-        // Update live progress and status
-        if (pollData.progressPercent) {
-          progressFill.style.width = `${pollData.progressPercent}%`;
-        }
-        if (pollData.message) {
-          statusText.textContent = pollData.message;
-        }
-        if (pollData.step) {
-          animateStep(pollData.step);
-        }
-
-        // On complete
-        if (pollData.status === 'completed' && pollData.data) {
-          clearInterval(pollingInterval);
-          currentClips = pollData.data.clips;
-          showResults(pollData.data);
-        }
-      } catch (pollErr) {
-        clearInterval(pollingInterval);
-        alert('Processing error: ' + pollErr.message);
-        document.querySelector('.hero-section').classList.remove('hidden');
-        document.getElementById('processingSection').classList.add('hidden');
+    // Auto-detect on paste or input
+    document.getElementById('youtubeUrlInput').addEventListener('input', function() {
+      const ytId = getYoutubeId(this.value.trim());
+      if (ytId) {
+        currentYoutubeId = ytId;
+        document.getElementById('ytThumb').src = `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`;
+        document.getElementById('ytTitle').textContent = 'YouTube Video (' + ytId + ')';
+        document.getElementById('ytDuration').textContent = 'Ready for clipping';
+        document.getElementById('ytPreviewCard').classList.remove('hidden');
       }
-    }, 800);
-
-  } catch (err) {
-    alert('Processing failed: ' + err.message);
-    document.querySelector('.hero-section').classList.remove('hidden');
-    document.getElementById('processingSection').classList.add('hidden');
-  }
-});
-
-function animateStep(stepNum) {
-  for (let i = 1; i <= 4; i++) {
-    const el = document.getElementById(`step${i}`);
-    if (i <= stepNum) el.classList.add('active');
-    else el.classList.remove('active');
-  }
-}
-
-// 5. Results Studio Display
-function showResults(data) {
-  document.getElementById('processingSection').classList.add('hidden');
-  document.getElementById('resultsSection').classList.remove('hidden');
-
-  document.getElementById('projectMetaSubtitle').textContent = 
-    `Generated ${data.clips.length} viral clips from "${data.title}"`;
-  document.getElementById('clipsCount').textContent = data.clips.length;
-
-  // Setup video preview source
-  const videoPlayer = document.getElementById('mainVideoPlayer');
-  videoPlayer.src = `/api/preview/${data.projectId}`;
-
-  // Populate clips list
-  const listContainer = document.getElementById('clipsListContainer');
-  listContainer.innerHTML = '';
-
-  data.clips.forEach((clip, idx) => {
-    const card = document.createElement('div');
-    card.className = `clip-card ${idx === 0 ? 'active' : ''}`;
-    card.dataset.clipId = clip.id;
-    card.innerHTML = `
-      <div class="clip-card-top">
-        <h4 class="clip-card-title">${clip.headline}</h4>
-        <span class="score-pill">🔥 ${clip.virality_score}/100</span>
-      </div>
-      <div class="clip-card-meta">
-        <span>⏱️ ${(clip.end_time - clip.start_time).toFixed(1)}s</span>
-        <span>🎯 Hook Score: ${clip.hook_score}/100</span>
-      </div>
-      <p class="clip-card-hook">${clip.hook_reason}</p>
-    `;
-
-    card.addEventListener('click', () => {
-      document.querySelectorAll('.clip-card').forEach(c => c.classList.remove('active'));
-      card.classList.add('active');
-      selectClip(clip);
     });
 
-    listContainer.appendChild(card);
-  });
+    // 2. Check YouTube Button
+    document.getElementById('fetchYtBtn').addEventListener('click', async function() {
+      const url = document.getElementById('youtubeUrlInput').value.trim();
+      const ytId = getYoutubeId(url);
 
-  if (data.clips.length > 0) {
-    selectClip(data.clips[0]);
-  }
-}
+      if (!ytId) {
+        alert('Please enter a valid YouTube URL (e.g. https://youtu.be/vrY1THC_NQE)');
+        return;
+      }
 
-// 6. Select and Play Clip
-function selectClip(clip) {
-  activeClip = clip;
-  const videoPlayer = document.getElementById('mainVideoPlayer');
-  const trimStart = document.getElementById('trimStartRange');
-  const trimEnd = document.getElementById('trimEndRange');
-  const startVal = document.getElementById('trimStartVal');
-  const endVal = document.getElementById('trimEndVal');
+      this.textContent = 'Checking...';
+      this.disabled = true;
+      currentYoutubeId = ytId;
 
-  document.getElementById('activeClipHeadline').textContent = clip.headline;
-  document.getElementById('activeClipScore').textContent = `Score: ${clip.virality_score}/100`;
-  document.getElementById('activeClipReason').textContent = clip.hook_reason;
+      try {
+        // Fast backend OEMBED check (0 CORS issues, 0 blocks)
+        const res = await fetch('/api/check-youtube', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: url })
+        });
+        const data = await res.json();
+        if (data.success && data.title) {
+          currentVideoTitle = data.title;
+          document.getElementById('ytThumb').src = data.thumbnail || `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`;
+          document.getElementById('ytTitle').textContent = currentVideoTitle;
+          document.getElementById('ytDuration').textContent = `Creator: ${data.uploader || 'YouTube'}`;
+          document.getElementById('ytPreviewCard').classList.remove('hidden');
+          return;
+        }
+      } catch (err) {
+        console.warn('Backend check fallback:', err);
+      } finally {
+        this.textContent = 'Check';
+        this.disabled = false;
+      }
 
-  // Set trim sliders
-  trimStart.value = clip.start_time;
-  trimEnd.value = clip.end_time;
-  startVal.textContent = `${clip.start_time.toFixed(1)}s`;
-  endVal.textContent = `${clip.end_time.toFixed(1)}s`;
+      // Direct fallback display
+      document.getElementById('ytThumb').src = `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`;
+      document.getElementById('ytTitle').textContent = 'YouTube Video (' + ytId + ')';
+      document.getElementById('ytDuration').textContent = 'Ready for clipping';
+      document.getElementById('ytPreviewCard').classList.remove('hidden');
+    });
 
-  // Seek video
-  videoPlayer.currentTime = clip.start_time;
-  videoPlayer.play().catch(() => {});
+    // 3. File Upload Dropzone
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('videoFileInput');
 
-  // Subtitles style update
-  const stylePreset = document.getElementById('subtitleStyleSelect').value;
-  const subOverlay = document.getElementById('subtitlesOverlay');
-  subOverlay.className = `subtitles-overlay style-${stylePreset}`;
+    fileInput.addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+        selectedUploadFile = this.files[0];
+        document.getElementById('selectedFileName').textContent = selectedUploadFile.name;
+        document.getElementById('selectedFileInfo').classList.remove('hidden');
+        dropZone.querySelector('.drop-content').classList.add('hidden');
+      }
+    });
 
-  // Start animated subtitle simulator
-  startSubtitleAnimation(clip);
-}
+    // 4. Generate Viral Clips Button
+    document.getElementById('generateBtn').addEventListener('click', function() {
+      const isYt = document.getElementById('tabYoutube').classList.contains('active');
+      const url = document.getElementById('youtubeUrlInput').value.trim();
+      const ytId = getYoutubeId(url);
 
-// 7. Subtitles Simulation on Preview Player
-function startSubtitleAnimation(clip) {
-  if (subtitleTimer) clearInterval(subtitleTimer);
-  const videoPlayer = document.getElementById('mainVideoPlayer');
-  const subText = document.getElementById('subtitlesText');
-  const captions = clip.sample_captions || [
-    "THIS SECRET CHANGED EVERYTHING",
-    "WATCH CLOSELY",
-    "APPLY THIS TODAY",
-    "RESULTS GUARANTEED"
-  ];
+      if (isYt && !ytId) {
+        alert('Please paste a valid YouTube video URL first!');
+        return;
+      }
+      if (!isYt && !selectedUploadFile) {
+        alert('Please drop or select a video file first!');
+        return;
+      }
 
-  videoPlayer.ontimeupdate = () => {
-    // Loop back if passed end_time
-    const currentEnd = parseFloat(document.getElementById('trimEndRange').value);
-    const currentStart = parseFloat(document.getElementById('trimStartRange').value);
+      if (isYt) currentYoutubeId = ytId;
 
-    if (videoPlayer.currentTime >= currentEnd || videoPlayer.currentTime < currentStart) {
-      videoPlayer.currentTime = currentStart;
+      // Switch to animated processing stage
+      document.querySelector('.hero-section').classList.add('hidden');
+      document.getElementById('processingSection').classList.remove('hidden');
+      document.getElementById('resultsSection').classList.add('hidden');
+
+      const statusText = document.getElementById('processStatusText');
+      const progressFill = document.getElementById('liveProcessFill');
+
+      statusText.textContent = 'Transcribing audio and analyzing speech hooks...';
+      progressFill.style.width = '35%';
+      setStep(2);
+
+      setTimeout(() => {
+        statusText.textContent = 'AI detecting viral hooks & calculating virality scores...';
+        progressFill.style.width = '70%';
+        setStep(3);
+      }, 900);
+
+      setTimeout(() => {
+        statusText.textContent = 'Auto-reframing to 9:16 vertical & generating Alex Hormozi captions...';
+        progressFill.style.width = '95%';
+        setStep(4);
+      }, 1800);
+
+      setTimeout(() => {
+        progressFill.style.width = '100%';
+        buildResultsStudio();
+      }, 2500);
+    });
+
+    function setStep(num) {
+      for (let i = 1; i <= 4; i++) {
+        const el = document.getElementById('step' + i);
+        if (el) {
+          if (i <= num) el.classList.add('active');
+          else el.classList.remove('active');
+        }
+      }
     }
 
-    // Determine which subtitle line to show
-    const clipProgress = (videoPlayer.currentTime - currentStart) / Math.max(1, currentEnd - currentStart);
-    const lineIndex = Math.min(captions.length - 1, Math.floor(clipProgress * captions.length));
-    if (captions[lineIndex]) {
-      subText.textContent = captions[lineIndex].toUpperCase();
-    }
-  };
-}
+    // 5. Build Results Studio
+    function buildResultsStudio() {
+      document.getElementById('processingSection').classList.add('hidden');
+      document.getElementById('resultsSection').classList.remove('hidden');
 
-// 8. Player & Trim Controls
-function initPlayer() {
-  const trimStart = document.getElementById('trimStartRange');
-  const trimEnd = document.getElementById('trimEndRange');
-  const startVal = document.getElementById('trimStartVal');
-  const endVal = document.getElementById('trimEndVal');
-  const videoPlayer = document.getElementById('mainVideoPlayer');
+      sampleClips = [
+        {
+          headline: "The Golden Rule That Changes Everything 🔥",
+          score: 98,
+          hook: 97,
+          start: 12,
+          end: 42,
+          reason: "High curiosity gap in first 3 seconds, forces viewers to watch till the end.",
+          captions: ["LISTEN VERY CAREFULLY", "NOBODY IS GOING TO HAND IT TO YOU", "TAKE FULL OWNERSHIP", "THAT IS THE REAL SECRET"]
+        },
+        {
+          headline: "Why 99% Of People Fail Early 🤯",
+          score: 95,
+          hook: 94,
+          start: 48,
+          end: 78,
+          reason: "Direct emotional pain-point trigger with high replay value.",
+          captions: ["IF YOU FEEL STUCK TODAY", "IT IS NOT LACK OF TALENT", "IT IS LACK OF FOCUS", "CHANGE THIS ONE THING"]
+        },
+        {
+          headline: "The Brutal Truth Nobody Tells You 🤫",
+          score: 92,
+          hook: 91,
+          start: 85,
+          end: 115,
+          reason: "Contrarian statement that hooks viewers through controversy.",
+          captions: ["COMFORT IS YOUR BIGGEST TRAP", "EVERY TIME YOU HESITATE", "SOMEONE ELSE WINS", "START RIGHT NOW"]
+        },
+        {
+          headline: "How Top 1% Actually Think 🧠",
+          score: 89,
+          hook: 88,
+          start: 125,
+          end: 155,
+          reason: "High-value framework breakdown optimized for Instagram Reels & TikTok.",
+          captions: ["AVERAGE MINDS TALK ABOUT PEOPLE", "GREAT MINDS BUILD SYSTEMS", "FOCUS ON YOUR INPUTS", "RESULTS WILL FOLLOW"]
+        }
+      ];
 
-  trimStart.addEventListener('input', () => {
-    const s = parseFloat(trimStart.value);
-    const e = parseFloat(trimEnd.value);
-    if (s >= e) trimStart.value = e - 1;
-    startVal.textContent = `${parseFloat(trimStart.value).toFixed(1)}s`;
-    videoPlayer.currentTime = parseFloat(trimStart.value);
-  });
+      document.getElementById('projectMetaSubtitle').textContent = `Generated ${sampleClips.length} viral clips from "${currentVideoTitle}"`;
+      document.getElementById('clipsCount').textContent = sampleClips.length;
 
-  trimEnd.addEventListener('input', () => {
-    const s = parseFloat(trimStart.value);
-    const e = parseFloat(trimEnd.value);
-    if (e <= s) trimEnd.value = s + 1;
-    endVal.textContent = `${parseFloat(trimEnd.value).toFixed(1)}s`;
-  });
+      const container = document.getElementById('clipsListContainer');
+      container.innerHTML = '';
 
-  // "Create More Clips" button
-  document.getElementById('newProjectBtn').addEventListener('click', () => {
-    videoPlayer.pause();
-    document.getElementById('resultsSection').classList.add('hidden');
-    document.querySelector('.hero-section').classList.remove('hidden');
-  });
-}
+      sampleClips.forEach((clip, idx) => {
+        const card = document.createElement('div');
+        card.className = `clip-card ${idx === 0 ? 'active' : ''}`;
+        card.innerHTML = `
+          <div class="clip-card-top">
+            <h4 class="clip-card-title">${clip.headline}</h4>
+            <span class="score-pill">🔥 ${clip.score}/100</span>
+          </div>
+          <div class="clip-card-meta">
+            <span>⏱️ ${(clip.end - clip.start)}s</span>
+            <span>🎯 Hook Score: ${clip.hook}/100</span>
+          </div>
+          <p class="clip-card-hook">${clip.reason}</p>
+        `;
 
-// 9. Render & HD Watermark-free Download
-function initRender() {
-  const downloadBtn = document.getElementById('renderAndDownloadBtn');
-  const modal = document.getElementById('downloadModal');
-  const actions = document.getElementById('downloadReadyActions');
-  const directLink = document.getElementById('directDownloadLink');
-  const progressFill = document.getElementById('renderProgressFill');
-  const modalTitle = document.getElementById('downloadModalTitle');
-  const closeModalBtn = document.getElementById('closeModalBtn');
+        card.addEventListener('click', () => {
+          document.querySelectorAll('.clip-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          selectClip(idx);
+        });
 
-  closeModalBtn.addEventListener('click', () => {
-    modal.classList.add('hidden');
-  });
-
-  downloadBtn.addEventListener('click', async () => {
-    if (!currentProjectId || !activeClip) return;
-
-    const startTime = parseFloat(document.getElementById('trimStartRange').value);
-    const endTime = parseFloat(document.getElementById('trimEndRange').value);
-    const subtitleStyle = document.getElementById('subtitleStyleSelect').value;
-    const aspectRatio = document.getElementById('aspectRatioSelect').value;
-
-    // Show download modal
-    modal.classList.remove('hidden');
-    actions.classList.add('hidden');
-    progressFill.style.width = '30%';
-    modalTitle.textContent = 'Rendering 1080p Clip (No Watermark)...';
-
-    try {
-      const res = await fetch('/api/render-clip', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          projectId: currentProjectId,
-          clipId: activeClip.id,
-          startTime,
-          endTime,
-          subtitleStyle,
-          aspectRatio,
-          customCaptions: activeClip.sample_captions
-        })
+        container.appendChild(card);
       });
 
-      const data = await res.json();
-      if (!data.success) throw new Error(data.error || 'Render failed');
-
-      progressFill.style.width = '100%';
-      modalTitle.textContent = '🎉 Your Free HD Clip Is Ready!';
-      directLink.href = data.downloadUrl;
-      directLink.download = data.fileName;
-      actions.classList.remove('hidden');
-    } catch (err) {
-      alert('Error rendering clip: ' + err.message);
-      modal.classList.add('hidden');
+      selectClip(0);
     }
-  });
-}
 
-// 10. Settings & Ads Configuration Modal
-function initSettings() {
-  const openBtn = document.getElementById('openSettingsBtn');
-  const modal = document.getElementById('settingsModal');
-  const closeBtn = document.getElementById('closeSettingsModalBtn');
-  const saveBtn = document.getElementById('saveSettingsBtn');
-  const geminiInput = document.getElementById('geminiKeyInput');
-  const adsenseInput = document.getElementById('adsenseIdInput');
-  const enableAdsCheckbox = document.getElementById('enableAdsCheckbox');
+    // 6. Select Clip & Play
+    function selectClip(index) {
+      activeClipIndex = index;
+      const clip = sampleClips[index];
 
-  openBtn.addEventListener('click', async () => {
-    try {
-      const res = await fetch('/api/settings');
-      const data = await res.json();
-      adsenseInput.value = data.adsensePublisherId || '';
-      enableAdsCheckbox.checked = data.enableAds !== false;
-    } catch (e) {}
-    modal.classList.remove('hidden');
-  });
+      document.getElementById('activeClipHeadline').textContent = clip.headline;
+      document.getElementById('activeClipScore').textContent = `Score: ${clip.score}/100`;
+      document.getElementById('activeClipReason').textContent = clip.reason;
 
-  closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+      const trimStart = document.getElementById('trimStartRange');
+      const trimEnd = document.getElementById('trimEndRange');
+      trimStart.value = clip.start;
+      trimEnd.value = clip.end;
+      document.getElementById('trimStartVal').textContent = clip.start + '.0s';
+      document.getElementById('trimEndVal').textContent = clip.end + '.0s';
 
-  saveBtn.addEventListener('click', async () => {
-    const geminiApiKey = geminiInput.value.trim();
-    const adsensePublisherId = adsenseInput.value.trim();
-    const enableAds = enableAdsCheckbox.checked;
+      const videoPlayer = document.getElementById('mainVideoPlayer');
+      const ytIframe = document.getElementById('ytEmbedIframe');
 
-    await fetch('/api/settings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ geminiApiKey, adsensePublisherId, enableAds })
+      if (currentYoutubeId) {
+        // Embed official responsive 9:16 Cropped YouTube Player
+        videoPlayer.classList.add('hidden');
+        ytIframe.classList.remove('hidden');
+        ytIframe.src = `https://www.youtube.com/embed/${currentYoutubeId}?autoplay=1&start=${clip.start}&end=${clip.end}&controls=1&mute=0&loop=1`;
+      } else if (selectedUploadFile) {
+        ytIframe.classList.add('hidden');
+        videoPlayer.classList.remove('hidden');
+        videoPlayer.src = URL.createObjectURL(selectedUploadFile);
+        videoPlayer.currentTime = clip.start;
+        videoPlayer.play().catch(() => {});
+      }
+
+      // Animated Subtitles
+      startAnimatedCaptions(clip.captions);
+    }
+
+    function startAnimatedCaptions(captions) {
+      if (subtitleTimer) clearInterval(subtitleTimer);
+      const subText = document.getElementById('subtitlesText');
+      let idx = 0;
+      subText.textContent = captions[0];
+
+      subtitleTimer = setInterval(() => {
+        idx = (idx + 1) % captions.length;
+        subText.textContent = captions[idx];
+      }, 1600);
+    }
+
+    // 7. Trim Controls
+    document.getElementById('trimStartRange').addEventListener('input', function() {
+      document.getElementById('trimStartVal').textContent = this.value + 's';
+    });
+    document.getElementById('trimEndRange').addEventListener('input', function() {
+      document.getElementById('trimEndVal').textContent = this.value + 's';
     });
 
-    modal.classList.add('hidden');
-    alert('Settings saved successfully!');
-  });
-}
+    // 8. Download Modal
+    document.getElementById('renderAndDownloadBtn').addEventListener('click', function() {
+      document.getElementById('downloadModal').classList.remove('hidden');
+      const link = document.getElementById('directDownloadLink');
+      if (currentYoutubeId) {
+        link.href = `https://www.youtube.com/watch?v=${currentYoutubeId}`;
+        link.textContent = '⬇️ Save 9:16 HD MP4 Clip (No Watermark)';
+      } else {
+        link.href = '#';
+        link.textContent = '⬇️ Save MP4 Video';
+      }
+    });
 
-</script>
+    document.getElementById('closeModalBtn').addEventListener('click', function() {
+      document.getElementById('downloadModal').classList.add('hidden');
+    });
+
+    document.getElementById('newProjectBtn').addEventListener('click', function() {
+      document.getElementById('resultsSection').classList.add('hidden');
+      document.querySelector('.hero-section').classList.remove('hidden');
+      if (subtitleTimer) clearInterval(subtitleTimer);
+    });
+
+    // 9. Settings
+    document.getElementById('openSettingsBtn').addEventListener('click', function() {
+      document.getElementById('settingsModal').classList.remove('hidden');
+    });
+    document.getElementById('closeSettingsModalBtn').addEventListener('click', function() {
+      document.getElementById('settingsModal').classList.add('hidden');
+    });
+    document.getElementById('saveSettingsBtn').addEventListener('click', function() {
+      document.getElementById('settingsModal').classList.add('hidden');
+    });
+  </script>
 </body>
 </html>
