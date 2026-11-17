@@ -304,9 +304,9 @@ app.get('/api/download-clip', (req, res) => {
     }
   }
 
-  // 2. For YouTube input: Redirect directly to the actual YouTube video downloader so the user downloads the real video of that link!
+  // 2. For YouTube input: Redirect directly to unblocked, ad-free downloader
   if (ytId) {
-    return res.redirect(`https://10downloader.com/download?v=${encodeURIComponent(ytId)}`);
+    return res.redirect(`https://cobalt.tools`);
   }
 
   // Fallback
