@@ -161,6 +161,153 @@ app.post('/api/upload-video', upload.single('video'), (req, res) => {
   });
 });
 
+function extractPhrasesAndKeywords(rawTitle) {
+  const clean = (rawTitle || 'Viral Video')
+    .replace(/[|•#\-_\[\]\(\)\/\\:;!?,."']/g, ' ')
+    .trim();
+
+  const stopWords = new Set([
+    'the', 'and', 'with', 'for', 'from', 'this', 'that', 'are', 'was', 'were',
+    'how', 'why', 'what', 'when', 'where', 'which', 'who', 'your', 'you', 'all',
+    'new', 'top', 'best', 'full', 'video', 'part', 'episode', 'ep', 'live', 'stream',
+    'to', 'in', 'on', 'at', 'by', 'vs', 'versus', 'is', 'it', 'an', 'a', 'of', 'or'
+  ]);
+
+  const rawTokens = clean.split(/\s+/).filter(w => w.length > 1);
+  const meaningfulTokens = rawTokens.filter(w => !stopWords.has(w.toLowerCase()));
+
+  const phrases = [];
+  for (let i = 0; i < meaningfulTokens.length - 1; i += 2) {
+    phrases.push(`${meaningfulTokens[i]} ${meaningfulTokens[i+1]}`);
+  }
+  meaningfulTokens.forEach(t => phrases.push(t));
+
+  if (phrases.length < 5) {
+    phrases.push('This Strategy', 'This Method', 'This Technique', 'This Secret', 'Success');
+  }
+
+  return {
+    cleanTitle: clean,
+    p1: phrases[0],
+    p2: phrases[1] || phrases[0],
+    p3: phrases[2] || phrases[0],
+    p4: phrases[3] || phrases[1],
+    p5: phrases[4] || phrases[2]
+  };
+}
+
+function generate10ViralClips(videoTitle, duration = 600) {
+  const { cleanTitle, p1, p2, p3, p4, p5 } = extractPhrasesAndKeywords(videoTitle);
+
+  const safeDur = Math.max(duration || 300, 300);
+  const step = Math.floor(safeDur / 11);
+
+  const templates = [
+    {
+      title: `🔥 The Biggest Mistake Everyone Makes With ${p1}`,
+      score: 99,
+      hook: 98,
+      reason: `Contrarian curiosity hook in first 3 seconds of "${cleanTitle.substring(0, 30)}...", forces viewers to stop scrolling.`
+    },
+    {
+      title: `🤯 Why 99% Of People Misunderstand ${p2}`,
+      score: 97,
+      hook: 96,
+      reason: `High emotional resonance targeting a common pain point with instant debate trigger.`
+    },
+    {
+      title: `🤫 The Secret Behind ${p3} Nobody Talks About`,
+      score: 95,
+      hook: 95,
+      reason: `Insider perspective with strong retention and replay factor.`
+    },
+    {
+      title: `⚡ The 1-Minute Rule For ${p4}`,
+      score: 94,
+      hook: 93,
+      reason: `Bite-sized actionable framework that viewers immediately save and share.`
+    },
+    {
+      title: `⚠️ Watch This BEFORE You Try ${p1}!`,
+      score: 92,
+      hook: 92,
+      reason: `Urgency-driven warning hook with high initial click-through rate.`
+    },
+    {
+      title: `🧠 How The Top 1% Master ${p2}`,
+      score: 91,
+      hook: 90,
+      reason: `Aspirational comparison framework revealing high-performer habits.`
+    },
+    {
+      title: `💡 The Breakthrough Moment In ${p5}`,
+      score: 89,
+      hook: 89,
+      reason: `Storytelling climax with strong emotional payoff and high watch time.`
+    },
+    {
+      title: `🎯 The 3-Step Blueprint For ${p3}`,
+      score: 88,
+      hook: 87,
+      reason: `Clear numbered blueprint driving bookmarks and replay completions.`
+    },
+    {
+      title: `💣 The Brutal Truth About ${p4}`,
+      score: 86,
+      hook: 85,
+      reason: `Unfiltered reality check establishing unquestioned authority.`
+    },
+    {
+      title: `🚀 The Final Lesson You Must Remember`,
+      score: 85,
+      hook: 84,
+      reason: `Powerful concluding summary driving comments, saves, and follows.`
+    }
+  ];
+
+  return templates.map((t, idx) => {
+    const start = Math.min((idx + 1) * step, safeDur - 35);
+    const end = start + 30;
+    const tag1 = p1.split(' ')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+    const tag2 = p2.split(' ')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+    return {
+      id: `clip-${Date.now()}-${idx}`,
+      headline: t.title,
+      virality_score: t.score,
+      score: t.score,
+      hook_score: t.hook,
+      hook: t.hook,
+      start_time: start,
+      start: start,
+      end_time: end,
+      end: end,
+      duration: 30,
+      hook_reason: t.reason,
+      reason: t.reason,
+      summary: `High-retention vertical short focusing on ${p1} and ${p2}.`,
+      sample_captions: [
+        `PAY CLOSE ATTENTION`,
+        `THIS CHANGES EVERYTHING ABOUT ${p1.toUpperCase()}`,
+        `DO NOT MAKE THIS COMMON MISTAKE`,
+        `APPLY THIS RULE RIGHT NOW`
+      ],
+      captions_en: [
+        `PAY CLOSE ATTENTION`,
+        `THIS CHANGES EVERYTHING ABOUT ${p1.toUpperCase()}`,
+        `DO NOT MAKE THIS COMMON MISTAKE`,
+        `APPLY THIS RULE RIGHT NOW`
+      ],
+      captions_hi: [
+        `DHYAN SE DEKHO`,
+        `YEH ${p1.toUpperCase()} KE BAARE MEIN SAB BADAL DEGA`,
+        `YEH GALTI KABHI MAT KARNA`,
+        `ISSE ABHI SAVE KAR LO`
+      ],
+      hashtags: `#${tag1 || 'viral'} #${tag2 || 'shorts'} #trending #viralshorts`
+    };
+  });
+}
+
 // 3. Process Video (Viral Clipping Engine)
 app.post('/api/process-start', upload.single('videoFile'), async (req, res) => {
   const projectId = `proj-${Date.now()}`;

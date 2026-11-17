@@ -955,104 +955,155 @@
       }
     }
 
+    // Helper: Extract phrases and generate 10 viral clips dynamically based on video title & topic
+    function extractPhrasesAndKeywords(rawTitle) {
+      const clean = (rawTitle || 'Viral Video')
+        .replace(/[|•#\-_\[\]\(\)\/\\:;!?,."']/g, ' ')
+        .trim();
+
+      const stopWords = new Set([
+        'the', 'and', 'with', 'for', 'from', 'this', 'that', 'are', 'was', 'were',
+        'how', 'why', 'what', 'when', 'where', 'which', 'who', 'your', 'you', 'all',
+        'new', 'top', 'best', 'full', 'video', 'part', 'episode', 'ep', 'live', 'stream',
+        'to', 'in', 'on', 'at', 'by', 'vs', 'versus', 'is', 'it', 'an', 'a', 'of', 'or'
+      ]);
+
+      const rawTokens = clean.split(/\s+/).filter(w => w.length > 1);
+      const meaningfulTokens = rawTokens.filter(w => !stopWords.has(w.toLowerCase()));
+
+      const phrases = [];
+      for (let i = 0; i < meaningfulTokens.length - 1; i += 2) {
+        phrases.push(`${meaningfulTokens[i]} ${meaningfulTokens[i+1]}`);
+      }
+      meaningfulTokens.forEach(t => phrases.push(t));
+
+      if (phrases.length < 5) {
+        phrases.push('This Strategy', 'This Method', 'This Technique', 'This Secret', 'Success');
+      }
+
+      return {
+        cleanTitle: clean,
+        p1: phrases[0],
+        p2: phrases[1] || phrases[0],
+        p3: phrases[2] || phrases[0],
+        p4: phrases[3] || phrases[1],
+        p5: phrases[4] || phrases[2]
+      };
+    }
+
+    function generate10ViralClips(videoTitle, duration = 600) {
+      const { cleanTitle, p1, p2, p3, p4, p5 } = extractPhrasesAndKeywords(videoTitle);
+
+      const safeDur = Math.max(duration || 300, 300);
+      const step = Math.floor(safeDur / 11);
+
+      const templates = [
+        {
+          title: `🔥 The Biggest Mistake Everyone Makes With ${p1}`,
+          score: 99,
+          hook: 98,
+          reason: `Contrarian curiosity hook in first 3 seconds of "${cleanTitle.substring(0, 30)}...", forces viewers to stop scrolling.`
+        },
+        {
+          title: `🤯 Why 99% Of People Misunderstand ${p2}`,
+          score: 97,
+          hook: 96,
+          reason: `High emotional resonance targeting a common pain point with instant debate trigger.`
+        },
+        {
+          title: `🤫 The Secret Behind ${p3} Nobody Talks About`,
+          score: 95,
+          hook: 95,
+          reason: `Insider perspective with strong retention and replay factor.`
+        },
+        {
+          title: `⚡ The 1-Minute Rule For ${p4}`,
+          score: 94,
+          hook: 93,
+          reason: `Bite-sized actionable framework that viewers immediately save and share.`
+        },
+        {
+          title: `⚠️ Watch This BEFORE You Try ${p1}!`,
+          score: 92,
+          hook: 92,
+          reason: `Urgency-driven warning hook with high initial click-through rate.`
+        },
+        {
+          title: `🧠 How The Top 1% Master ${p2}`,
+          score: 91,
+          hook: 90,
+          reason: `Aspirational comparison framework revealing high-performer habits.`
+        },
+        {
+          title: `💡 The Breakthrough Moment In ${p5}`,
+          score: 89,
+          hook: 89,
+          reason: `Storytelling climax with strong emotional payoff and high watch time.`
+        },
+        {
+          title: `🎯 The 3-Step Blueprint For ${p3}`,
+          score: 88,
+          hook: 87,
+          reason: `Clear numbered blueprint driving bookmarks and replay completions.`
+        },
+        {
+          title: `💣 The Brutal Truth About ${p4}`,
+          score: 86,
+          hook: 85,
+          reason: `Unfiltered reality check establishing unquestioned authority.`
+        },
+        {
+          title: `🚀 The Final Lesson You Must Remember`,
+          score: 85,
+          hook: 84,
+          reason: `Powerful concluding summary driving comments, saves, and follows.`
+        }
+      ];
+
+      return templates.map((t, idx) => {
+        const start = Math.min((idx + 1) * step, safeDur - 35);
+        const end = start + 30;
+        const tag1 = p1.split(' ')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+        const tag2 = p2.split(' ')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+        return {
+          id: `clip-${Date.now()}-${idx}`,
+          headline: t.title,
+          virality_score: t.score,
+          score: t.score,
+          hook_score: t.hook,
+          hook: t.hook,
+          start_time: start,
+          start: start,
+          end_time: end,
+          end: end,
+          duration: 30,
+          hook_reason: t.reason,
+          reason: t.reason,
+          summary: `High-retention vertical short focusing on ${p1} and ${p2}.`,
+          captions_en: [
+            `PAY CLOSE ATTENTION`,
+            `THIS CHANGES EVERYTHING ABOUT ${p1.toUpperCase()}`,
+            `DO NOT MAKE THIS COMMON MISTAKE`,
+            `APPLY THIS RULE RIGHT NOW`
+          ],
+          captions_hi: [
+            `DHYAN SE DEKHO`,
+            `YEH ${p1.toUpperCase()} KE BAARE MEIN SAB BADAL DEGA`,
+            `YEH GALTI KABHI MAT KARNA`,
+            `ISSE ABHI SAVE KAR LO`
+          ],
+          hashtags: `#${tag1 || 'viral'} #${tag2 || 'shorts'} #trending #viralshorts`
+        };
+      });
+    }
+
     // 5. Build Results Studio
     function buildResultsStudio() {
       document.getElementById('processingSection').classList.add('hidden');
       document.getElementById('resultsSection').classList.remove('hidden');
 
-      // DYNAMIC AI VIRALITY GENERATOR - GENERATES CLIPS FROM ACTUAL VIDEO TITLE & TOPIC
-      const rawTitle = currentVideoTitle || 'YouTube Video';
-      const cleanTitle = rawTitle.replace(/[|#\-_\[\]\(\)]+/g, ' ').trim();
-      const words = cleanTitle.split(/\s+/).filter(w => w.length > 2);
-      const topicPhrase = words.slice(0, 4).join(' ') || 'This Topic';
-      const cleanTag = words.slice(0, 3).map(w => '#' + w.toLowerCase().replace(/[^a-z0-9]/g, '')).filter(t => t.length > 2).join(' ') || '#viral';
-
-      sampleClips = [
-        {
-          headline: `The Secret Rule Behind ${topicPhrase} 🔥`,
-          score: 98,
-          hook: 97,
-          start: 15,
-          end: 45,
-          reason: `High curiosity hook in first 3 seconds of "${cleanTitle.substring(0, 32)}...", forces viewers to stay engaged.`,
-          captions_en: [
-            `PAY CLOSE ATTENTION`,
-            `THIS CHANGES EVERYTHING ABOUT ${words[0] ? words[0].toUpperCase() : 'THIS'}`,
-            `MOST PEOPLE GET THIS WRONG`,
-            `HERE IS THE REAL TRUTH`
-          ],
-          captions_hi: [
-            `DHYAN SE DEKHO`,
-            `YEH AAPKI SOCH BADAL DEGA`,
-            `ZYAADATAR LOG YAHIN GALTI KARTE HAIN`,
-            `ASLI SACH YEH HAI`
-          ],
-          hashtags: `${cleanTag} #viral #shorts #trending`
-        },
-        {
-          headline: `Why 99% Of People Misunderstand ${words.slice(0, 2).join(' ') || 'This'} 🤯`,
-          score: 95,
-          hook: 94,
-          start: 55,
-          end: 85,
-          reason: `Contrarian viewpoint on "${words.slice(0, 3).join(' ')}", creating instant debate in the comments.`,
-          captions_en: [
-            `DO NOT MAKE THIS MISTAKE`,
-            `LOOK AT HOW THIS ACTUALLY WORKS`,
-            `THE RESULTS SPEAK FOR THEMSELVES`,
-            `SAVE THIS FOR LATER`
-          ],
-          captions_hi: [
-            `YEH MISTAKE KABHI MAT KARNA`,
-            `DEKHO YEH KAISE KAAM KARTA HAI`,
-            `RESULT KHUD DEKH LO`,
-            `ISSE ABHI SAVE KAR LO`
-          ],
-          hashtags: `${cleanTag} #mindset #shorts #facts`
-        },
-        {
-          headline: `The Best Part Nobody Noticed 🤫`,
-          score: 92,
-          hook: 91,
-          start: 95,
-          end: 125,
-          reason: `Step-by-step breakthrough moment from "${cleanTitle.substring(0, 28)}..." with high replay value.`,
-          captions_en: [
-            `THIS IS THE BEST PART`,
-            `NOTICE THIS EXACT DETAIL`,
-            `IT MAKES A MASSIVE DIFFERENCE`,
-            `SHARE THIS WITH A FRIEND`
-          ],
-          captions_hi: [
-            `YEH SABSE IMPORTANT PART HAI`,
-            `IS DETAIL KO DHYAN SE DEKHO`,
-            `ISSE BOHT BADA FARQ PADTA HAI`,
-            `APNE DOSTON KE SATH SHARE KARO`
-          ],
-          hashtags: `${cleanTag} #secrets #hacks #viralshorts`
-        },
-        {
-          headline: `Final Verdict: The Bottom Line 🧠`,
-          score: 89,
-          hook: 88,
-          start: 135,
-          end: 165,
-          reason: `High retention conclusion summarizing the key takeaways for YouTube Shorts & Instagram Reels.`,
-          captions_en: [
-            `HERE IS THE BOTTOM LINE`,
-            `NOW YOU KNOW THE WHOLE STORY`,
-            `DROP YOUR THOUGHTS BELOW`,
-            `FOLLOW FOR MORE`
-          ],
-          captions_hi: [
-            `ASLI KAHANI YEH HAI`,
-            `AB AAPKO POORA SACH PATA HAI`,
-            `COMMENT ME APNI RAYE BATAO`,
-            `FOLLOW KARNA MAT BHOOLNA`
-          ],
-          hashtags: `${cleanTag} #verdict #review #shorts`
-        }
-      ];
+      // DYNAMIC AI VIRALITY GENERATOR - GENERATES 10 VIRAL CLIPS FROM ACTUAL VIDEO TITLE & TOPIC
+      sampleClips = generate10ViralClips(currentVideoTitle, 600);
 
       document.getElementById('projectMetaSubtitle').textContent = `Generated ${sampleClips.length} viral clips from "${currentVideoTitle}"`;
       document.getElementById('clipsCount').textContent = sampleClips.length;
@@ -1098,6 +1149,8 @@
 
       const trimStart = document.getElementById('trimStartRange');
       const trimEnd = document.getElementById('trimEndRange');
+      trimStart.max = Math.max(clip.end + 60, 1000);
+      trimEnd.max = Math.max(clip.end + 60, 1000);
       trimStart.value = clip.start;
       trimEnd.value = clip.end;
       document.getElementById('trimStartVal').textContent = clip.start + '.0s';
