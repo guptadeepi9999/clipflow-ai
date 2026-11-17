@@ -1182,7 +1182,7 @@
       } else {
         // Real MP4 Vertical Short Download
         const clipFileName = `ClipFlow_${clip.headline.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 25)}_9x16.mp4`;
-        downloadLink.href = `/api/download-clip?clipIndex=${activeClipIndex}`;
+        downloadLink.href = `/api/download-clip?clipIndex=${activeClipIndex}&yt=${encodeURIComponent(currentYoutubeId || '')}`;
         downloadLink.download = clipFileName;
         btnText.textContent = `⬇️ Save 9:16 HD MP4 Clip (No Watermark)`;
 
